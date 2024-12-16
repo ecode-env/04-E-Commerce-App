@@ -30,9 +30,16 @@ var userSchema = new mongoose.Schema({
 
 
 // Hash the password before saving it to the database
-userSchema.pre('save', (next) =>{
-
-})
+userSchema.pre('save', async function(next) {
+    try {
+      const salt = await bcrypt.genSalt(10); // Asynchronous salt generation
+      this.password = await bcrypt.hash(this.password, salt); // Hashing password asynchronously
+      next();
+    } catch (error) {
+    //   console.log(error);
+    }
+  });
+  
 
 const User = mongoose.model('User', userSchema);
 // Export the User model
