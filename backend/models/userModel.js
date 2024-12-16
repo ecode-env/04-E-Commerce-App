@@ -1,5 +1,5 @@
-import mongoose from "mongoose"; // This line imports the Mongoose library, which is a MongoDB
-import bcrypt from "bcrypt"; // This line imports the Bcrypt library for encrypt the password.
+import mongoose from "mongoose"; // Importing Mongoose library
+import bcrypt from "bcrypt"; // Importing Bcrypt library for hashing passwords
 
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema({
@@ -34,12 +34,12 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, salt); // Hashing password asynchronously
     next();
   } catch (error) {
-    //   console.log(error);
+    // next(error);  // Pass any errors to the next middleware
   }
 });
 
-userSchema.methods.isPasswordMatch = async (enteredPassword) => {
-  return await bcrypt.compare(enteredPassword, this.password);
+userSchema.methods.isPasswordMatch = async function(enteredPassword){
+  return await bcrypt.compare(enteredPassword, this.password); // Compare entered password with hashed password
 };
 const User = mongoose.model("User", userSchema);
 // Export the User model
