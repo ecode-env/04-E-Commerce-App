@@ -2,7 +2,6 @@ import express from 'express';
 const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
-import bodyParser from 'body-parser';  
 import colors from 'colors';
 import dbConnect from './config/dbConnect.js';
 import authRout from './routes/authRoute.js';
@@ -15,8 +14,9 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.use('/api/user', authRout);
 
 app.use(notFound);
