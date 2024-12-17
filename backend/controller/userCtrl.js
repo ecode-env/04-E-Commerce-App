@@ -44,9 +44,10 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 // Update user
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, 
+    const updateUser = await User.findByIdAndUpdate(
+      id, 
       {
         firstName: req?.body?.firstName,
         lastName: req?.body?.lastName,
@@ -57,9 +58,9 @@ const updateUser = asyncHandler(async (req, res) => {
         new: true,
       }
     );
-    res.json(updatedUser);
+    res.json(updateUser);
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error)
   }
 });
 
