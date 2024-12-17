@@ -16,6 +16,6 @@ router.post("/login", loginUserCtrl);
 router.get("/all-users", getAllUsers);
 router.get("/:id", authMiddleware, isAdmin, getSingleUser);
 router.delete("/:id", deleteUser);
-router.put("/:id", updateUser);
+router.put("/:edit-user",authMiddleware, updateUser);
 
 export default router;
