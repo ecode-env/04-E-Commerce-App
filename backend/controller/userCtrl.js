@@ -40,6 +40,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     throw new Error("Invalid Credentials");
   }
 });
+
   
 // Get all users from data base.
 
@@ -52,4 +53,32 @@ const getAllUsers = asyncHandler(async (req, res) => {
   }
 });
 
-export { createUser, loginUserCtrl, getAllUsers };
+// Get by ID single user from data base
+
+const getSingleUser = asyncHandler(async(req, res) => {
+  const { id } = req.params;
+  try {
+    const getUser = await User.find(User?.findById( id ));
+    res.json({
+      getUser,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+
+// Delete by ID single user from data base;
+
+const deleteUser = asyncHandler(async(req, res) => {
+      const { id } = req.params;
+      try {
+        const deleteUser = await User.findByIdAndDelete(id);
+        res.json(deleteUser);
+      } catch (error) {
+        throw new Error(error);
+      }
+});
+
+
+export { createUser, loginUserCtrl, getAllUsers, getSingleUser, deleteUser };
