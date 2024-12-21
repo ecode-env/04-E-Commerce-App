@@ -24,11 +24,24 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 
   // Find user by email
   const findUser = await User.findOne({ email });
-  
+
   // Check if user exists and password matches
   if (findUser && (await findUser.isPasswordMatch(password))) {
     // Password matches, send user data or token
-  const refreshToken = await generateRefreshToken(findUser?.id);
+    const refreshToken = await generateRefreshToken(findUser?.id);
+    const updateUser = await User.findByIdAndUpdate(
+      findUser?._id,
+      {
+        refreshToken: refreshToken,
+      },
+      {
+        new: true,
+      }
+    );
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    })
     res.json({
       _id: findUser?._id,
       firstName: findUser?.firstName,
@@ -46,12 +59,12 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 // Update user
 
 const updateUser = asyncHandler(async (req, res) => {
-  req.user
+  req.user;
   const { _id } = req.user;
-  validateMongoDBid
+  validateMongoDBid;
   try {
     const updateUser = await User.findByIdAndUpdate(
-      _id, 
+      _id,
       {
         firstName: req?.body?.firstName,
         lastName: req?.body?.lastName,
@@ -64,16 +77,15 @@ const updateUser = asyncHandler(async (req, res) => {
     );
     res.json(updateUser);
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
 });
 
-  
 // Get all users from data base.
 
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
-    const getUsers =  await User.find();
+    const getUsers = await User.find();
     res.json(getUsers);
   } catch (error) {
     throw new Error(error);
@@ -82,11 +94,11 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 // Get by ID single user from data base
 
-const getSingleUser = asyncHandler(async(req, res) => {
+const getSingleUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDBid(id);
   try {
-    const getUser = await User.find(User?.findById( id ));
+    const getUser = await User.find(User?.findById(id));
     res.json({
       getUser,
     });
@@ -95,57 +107,68 @@ const getSingleUser = asyncHandler(async(req, res) => {
   }
 });
 
-
 // Delete by ID single user from data base;
 
-const deleteUser = asyncHandler(async(req, res) => {
-      const { id } = req.params;
-      validateMongoDBid(id);
+const deleteUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDBid(id);
 
-      try {
-        const deleteUser = await User.findByIdAndDelete(id);
-        res.json(deleteUser);
-      } catch (error) {
-        throw new Error(error);
+  try {
+    const deleteUser = await User.findByIdAndDelete(id);
+    res.json(deleteUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const blockUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDBid(id);
+  try {
+    const blockUser = await User.findByIdAndUpdate(
+      id,
+      {
+        isBlocked: true,
+      },
+      {
+        new: true,
       }
-});
-
-const blockUser = asyncHandler(async(req, res) => {
-  const { id } = req.params;
-  validateMongoDBid(id);
-  try {
-    const blockUser = await User.findByIdAndUpdate(id, 
-      { 
-        isBlocked: true 
-      },
-    {
-      new: true,
-    });
+    );
     res.json({
-      msg: 'User Blocked'
+      msg: "User Blocked",
     });
   } catch (error) {
     throw new Error(error);
   }
 });
-const unblockUser = asyncHandler(async(req, res) => {
+const unblockUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDBid(id);
   try {
-    const unblockUser = await User.findByIdAndUpdate(id, 
-      { 
-        isBlocked: false 
+    const unblockUser = await User.findByIdAndUpdate(
+      id,
+      {
+        isBlocked: false,
       },
-    {
-      new: true,
-    });
+      {
+        new: true,
+      }
+    );
     res.json({
-      msg: 'User Unlocked'
+      msg: "User Unlocked",
     });
   } catch (error) {
     throw new Error(error);
   }
 });
 
-
-export { createUser, loginUserCtrl, getAllUsers, getSingleUser, deleteUser, updateUser, blockUser,unblockUser };
+export {
+  createUser,
+  loginUserCtrl,
+  getAllUsers,
+  getSingleUser,
+  deleteUser,
+  updateUser,
+  blockUser,
+  unblockUser,
+};
