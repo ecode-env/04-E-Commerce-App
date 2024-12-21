@@ -6,6 +6,7 @@ import colors from 'colors';
 import dbConnect from './config/dbConnect.js';
 import authRout from './routes/authRoute.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import cookieParser from 'cookie-parser';
 
 dbConnect();
 const PORT = process.env.PORT || 4000;
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.use('/api/user', authRout);
 

@@ -42,7 +42,7 @@ const userSchema = new Schema({
   },
   address: [{ type: Schema.Types.ObjectId, ref: "Address" }], // Fixed usage of ObjectId
   wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }], // Fixed usage of ObjectId
-  
+  refreshToken: { type: String,},
 },
 {
   timestamps: true, // Include timestamps for created and updated fields
