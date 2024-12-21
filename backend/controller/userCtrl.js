@@ -124,7 +124,7 @@ const block = asyncHandler(async(req, res) => {
 const unblock = asyncHandler(async(req, res) => {
   const { id } = req.params;
   try {
-    const blockUser = await User.findByIdAndUpdate(id, 
+    const unblockUser = await User.findByIdAndUpdate(id, 
       { 
         isBlocked: false 
       },
