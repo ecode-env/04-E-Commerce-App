@@ -8,6 +8,7 @@ import {
   updateUser,
   blockUser,
   unblockUser,
+  handlerRefreshToken
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post("/register", createUser);
 router.post("/login", loginUserCtrl);
 router.get("/all-users", getAllUsers);
+router.get("/refresh",handlerRefreshToken);
 router.get("/:id", authMiddleware, isAdmin, getSingleUser);
 router.delete("/:id",isAdmin, deleteUser);
 router.put("/:edit-user",authMiddleware, updateUser);

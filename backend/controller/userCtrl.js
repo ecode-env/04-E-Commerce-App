@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import generateToken from "../config/jwtToken.js";
 import validateMongoDBid from "../utils/validateMongodbid.js";
 import generateRefreshToken from "../config/refreshToken.js";
+import jwt from "jsonwebtoken";
 const createUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
   const findUser = await User.findOne({ email: email });
@@ -38,10 +39,10 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
         new: true,
       }
     );
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
-    })
+    });
     res.json({
       _id: findUser?._id,
       firstName: findUser?.firstName,
@@ -54,6 +55,22 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     // Invalid credentials
     throw new Error("Invalid Credentials");
   }
+});
+// cookies handling
+
+const handlerRefreshToken = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  if (!cookie?.refreshToken) throw new Error("No refresh token in cookies!");
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if (!user) throw new Error("No Refresh token present in db or not matched.");
+  jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
+    if (err || user.id !== decoded.id)
+      throw new Error("There something wrong with refresh token.");
+    const accessToken = generateRefreshToken(user?.id);
+    res.json({ accessToken });
+  });
+  res.json(user);
 });
 
 // Update user
@@ -171,4 +188,5 @@ export {
   updateUser,
   blockUser,
   unblockUser,
+  handlerRefreshToken,
 };
