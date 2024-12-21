@@ -24,16 +24,17 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 });
 
 const isAdmin = asyncHandler(async (req, res, next) => {
-    // Destructure the user object added to the request
-    const { email } = req.user;
-  
-    // Find the user by email in the database
-    const isAdminUser = await User.findOne({ email });
-  
-    // Check if user exists and has an admin role
-    if (!isAdminUser || isAdminUser.role !== "admin") throw new Error("Unauthorized access, only admin users are allowed");
-    // If user is admin, proceed to the next middleware or route
-    next();
-  });
+  // Destructure the user object added to the request
+  const { email } = req.user;
 
-export { authMiddleware, isAdmin};
+  // Find the user by email in the database
+  const isAdminUser = await User.findOne({ email });
+
+  // Check if user exists and has an admin role
+  if (!isAdminUser || isAdminUser.role !== "admin")
+    throw new Error("Unauthorized access, only admin users are allowed");
+  // If user is admin, proceed to the next middleware or route
+  next();
+});
+
+export { authMiddleware, isAdmin };
