@@ -104,5 +104,40 @@ const deleteUser = asyncHandler(async(req, res) => {
       }
 });
 
+const block = asyncHandler(async(req, res) => {
+  const { id } = req.params;
+  try {
+    const blockUser = await User.findByIdAndUpdate(id, 
+      { 
+        isBlocked: true 
+      },
+    {
+      new: true,
+    });
+    res.json({
+      msg: 'User Blocked'
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const unblock = asyncHandler(async(req, res) => {
+  const { id } = req.params;
+  try {
+    const blockUser = await User.findByIdAndUpdate(id, 
+      { 
+        isBlocked: false 
+      },
+    {
+      new: true,
+    });
+    res.json({
+      msg: 'User Unlocked'
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 
 export { createUser, loginUserCtrl, getAllUsers, getSingleUser, deleteUser, updateUser };
