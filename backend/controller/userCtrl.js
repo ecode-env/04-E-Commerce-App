@@ -104,7 +104,7 @@ const deleteUser = asyncHandler(async(req, res) => {
       }
 });
 
-const block = asyncHandler(async(req, res) => {
+const blockUser = asyncHandler(async(req, res) => {
   const { id } = req.params;
   try {
     const blockUser = await User.findByIdAndUpdate(id, 
@@ -121,7 +121,7 @@ const block = asyncHandler(async(req, res) => {
     throw new Error(error);
   }
 });
-const unblock = asyncHandler(async(req, res) => {
+const unblockUser = asyncHandler(async(req, res) => {
   const { id } = req.params;
   try {
     const unblockUser = await User.findByIdAndUpdate(id, 
@@ -140,4 +140,4 @@ const unblock = asyncHandler(async(req, res) => {
 });
 
 
-export { createUser, loginUserCtrl, getAllUsers, getSingleUser, deleteUser, updateUser };
+export { createUser, loginUserCtrl, getAllUsers, getSingleUser, deleteUser, updateUser, blockUser,unblockUser };

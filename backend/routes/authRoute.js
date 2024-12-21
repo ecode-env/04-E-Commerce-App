@@ -6,6 +6,8 @@ import {
   getSingleUser,
   deleteUser,
   updateUser,
+  blockUser,
+  unblockUser,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -17,5 +19,7 @@ router.get("/all-users", getAllUsers);
 router.get("/:id", authMiddleware, isAdmin, getSingleUser);
 router.delete("/:id", deleteUser);
 router.put("/:edit-user",authMiddleware, updateUser);
+router.put("/block-user/:id",authMiddleware,isAdmin, blockUser);
+router.put("/unblock-user/:id",authMiddleware, isAdmin,unblockUser);
 
 export default router;
