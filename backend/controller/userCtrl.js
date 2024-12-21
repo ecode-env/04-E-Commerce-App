@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../config/jwtToken.js";
 import validateMongoDBid from "../utils/validateMongodbid.js";
-
+import generateRefreshToken from "../config/refreshToken.js";
 const createUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
   const findUser = await User.findOne({ email: email });
@@ -28,6 +28,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
   // Check if user exists and password matches
   if (findUser && (await findUser.isPasswordMatch(password))) {
     // Password matches, send user data or token
+  const refreshToken = await generateRefreshToken(findUser?.id);
     res.json({
       _id: findUser?._id,
       firstName: findUser?.firstName,
