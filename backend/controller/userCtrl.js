@@ -73,6 +73,12 @@ const handlerRefreshToken = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
+// logout
+
+const logoutUser = asyncHandler(async (req, res) => {
+  
+});
+
 // Update user
 
 const updateUser = asyncHandler(async (req, res) => {
