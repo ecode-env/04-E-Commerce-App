@@ -8,7 +8,8 @@ import {
   updateUser,
   blockUser,
   unblockUser,
-  handlerRefreshToken
+  handlerRefreshToken,
+  logoutUser
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -18,6 +19,7 @@ router.post("/register", createUser);
 router.post("/login", loginUserCtrl);
 router.get("/all-users", getAllUsers);
 router.get("/refresh",handlerRefreshToken);
+router.get('/logout', logoutUser)
 router.get("/:id", authMiddleware, isAdmin, getSingleUser);
 router.delete("/:id",isAdmin, deleteUser);
 router.put("/:edit-user",authMiddleware, updateUser);

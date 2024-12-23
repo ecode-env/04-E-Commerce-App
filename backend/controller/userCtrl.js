@@ -76,7 +76,25 @@ const handlerRefreshToken = asyncHandler(async (req, res) => {
 // logout
 
 const logoutUser = asyncHandler(async (req, res) => {
-  
+  const cookie = req.cookies;
+  if(!cookie) throw new Error('No refresh token present in cookies');
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne( {refreshToken} );
+  if(!user) {
+    res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: true,
+  });
+  return res.sendStatus(204); // forbidden
+}
+await User.findOneAndUpdate(refreshToken, {
+  refreshToken: ''
+});
+res.clearCookie('refreshToken', {
+  httpOnly: true,
+  secure: true,
+});
+return res.sendStatus(204); // forbidden
 });
 
 // Update user
@@ -195,4 +213,5 @@ export {
   blockUser,
   unblockUser,
   handlerRefreshToken,
+  logoutUser,
 };
