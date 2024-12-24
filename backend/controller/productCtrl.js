@@ -70,7 +70,21 @@ const getProducts = asyncHandler(async (req, res) => {
 // Get all products
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const getProducts = await Product.find();
+     const queryObj = {...req.query}
+     const excludeFields = ['page', 'sort', 'limit', 'fields'];
+     excludeFields.forEach(el => delete queryObj[el]);
+
+
+
+
+
+
+
+
+
+     
+
+     const getProducts = await Product.where("category").equals(req.query.category);
     res.status(200).json(getProducts);
   } catch (error) {
     res.status(500).json({ message: error.message });
