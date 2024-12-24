@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import colors from 'colors';
 import dbConnect from './config/dbConnect.js';
-import authRout from './routes/authRoute.js';
+import authRouter from './routes/authRoute.js';
+import productRouter from './routes/productRoute.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
 
@@ -19,7 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/api/user', authRout);
+app.use('/api/user', authRouter);
+app.use('/api/product', productRouter);
 
 app.use(notFound);
 app.use(errorHandler);
