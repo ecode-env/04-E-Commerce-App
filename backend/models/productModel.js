@@ -54,4 +54,5 @@ var ProductSchema = new mongoose.Schema(
 );
 
 //Export the model
-module.exports = mongoose.model("Product", ProductSchema);
+const Product = model("Product", ProductSchema);
+export default Product;
