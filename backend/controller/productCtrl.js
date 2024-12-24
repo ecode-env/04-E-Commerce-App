@@ -1,14 +1,19 @@
 import Product from "../models/productModel.js";
 import asyncHandler from "express-async-handler";
+import slugify from "slugify";
 
 const createProduct = asyncHandler(async (req, res) => {
   try {
+    if(req.body.title){
+        req.body.slug = slugify(req.body.title);
+    }
     const newProduct = await Product.create(req.body);
     res.status(201).json(newProduct);
   } catch (error) {
     throw new Error(error);
   }
 });
+
 
 
 const getProducts = asyncHandler(async (req, res) => {
