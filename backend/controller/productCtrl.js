@@ -22,8 +22,6 @@ const getProducts = asyncHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncHandler(async (req, res) => {
-    const getProducts = await Product.find();
-    console.log(getProducts);
     try {
         const getProducts = await Product.find();
         res.status(200).json(getProducts);
