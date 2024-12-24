@@ -8,6 +8,7 @@ import authRouter from './routes/authRoute.js';
 import productRouter from './routes/productRoute.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 
 dbConnect();
 const PORT = process.env.PORT || 4000;
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
+app.use(morgan());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
