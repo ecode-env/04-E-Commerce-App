@@ -1,4 +1,5 @@
-const mongoose = require("mongoose"); // Erase if already required
+import mongoose from "mongoose"; // Erase if already required
+const { Schema, model, Types } = mongoose;
 
 // Declare the Schema of the Mongo model
 var ProductSchema = new mongoose.Schema(
@@ -30,7 +31,10 @@ var ProductSchema = new mongoose.Schema(
       type: String,
       enum: ["Apple", "Samsung", "Lenovo"],
     },
-    quantity: Number,
+    quantity: {
+      type: Number,
+      required: true,
+    },
     sold: {
       type: Number,
       default: 0,
