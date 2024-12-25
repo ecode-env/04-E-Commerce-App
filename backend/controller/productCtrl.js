@@ -70,12 +70,16 @@ const getProducts = asyncHandler(async (req, res) => {
 // Get all products
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
+    // Filtering
      const queryObj = {...req.query}
      const excludeFields = ['page', 'sort', 'limit', 'fields'];
      excludeFields.forEach(el => delete queryObj[el]);
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
      const query = Product.find(JSON.parse(queryStr));
+
+     // Sorting
+     
      const product = await query;
     res.status(200).json(product);
   } catch (error) {
