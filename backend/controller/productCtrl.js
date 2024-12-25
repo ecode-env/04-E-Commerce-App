@@ -95,10 +95,26 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
     // Step 6: Parse the modified query string back into an object
     // Use the object with MongoDB's `find` method to filter data in the database
-    const query = Product.find(JSON.parse(queryStr));
+    let query = Product.find(JSON.parse(queryStr));
     // Example: The final query will be Product.find({ price: { $gte: '100' } });
 
-    // Sorting
+    //-------------------- Sorting -------------------------
+
+    // Step 1: Check if the 'sort' parameter exists in the request query
+    if (req.query.sort) {
+      // Step 2: Split the 'sort' parameter by commas and join them with spaces
+      // Explanation: MongoDB's `sort()` method expects a string where fields are separated by spaces
+      const sortBy = req.query.sort.split(",").join(" ");
+      // Example: If req.query.sort = 'price,rating', then sortBy = 'price rating'
+
+      // Step 3: Apply the sort criteria to the query
+      query = query.sort(sortBy);
+      // Example: If sortBy = 'price rating', the query will sort by 'price' (ascending) and then by 'rating' (ascending)
+    } else {
+      // Step 4: If no 'sort' parameter is provided, sort by 'createdAt' field in descending order (default behavior)
+      query = query.sort("-createdAt");
+      // Explanation: The '-' indicates descending order. Without it, the sort would be ascending.
+    }
 
     const product = await query;
     res.status(200).json(product);
