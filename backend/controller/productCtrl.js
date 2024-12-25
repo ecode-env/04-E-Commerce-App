@@ -115,6 +115,22 @@ const getAllProducts = asyncHandler(async (req, res) => {
       query = query.sort("-createdAt");
       // Explanation: The '-' indicates descending order. Without it, the sort would be ascending.
     }
+    // -----------------<< Limiting thr fields >>----------------
+    // Step 1: Check if the 'fields' parameter exists in the request query
+    if (req.query.fields) {
+      // Step 2: Split the 'fields' parameter by commas and join them with spaces
+      // Explanation: MongoDB's `select()` method expects fields to be separated by spaces
+      const fields = req.query.fields.split(",").join(" ");
+      // Example: If req.query.fields = 'name,price', then fields = 'name price'
+
+      // Step 3: Use the `select` method to specify which fields to include in the response
+      query = query.select(fields);
+      // Example: query.select('name price') will include only the 'name' and 'price' fields in the response
+    } else {
+      // Step 4: If no 'fields' parameter is provided, include only the `__v` field by default
+      query = query.select("-__v");
+      // Explanation: The `__v` field is often used for internal versioning in MongoDB documents.
+    }
 
     const product = await query;
     res.status(200).json(product);
