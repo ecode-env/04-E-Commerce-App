@@ -71,20 +71,46 @@ const getProducts = asyncHandler(async (req, res) => {
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
     // Filtering
-     const queryObj = {...req.query}
-     const excludeFields = ['page', 'sort', 'limit', 'fields'];
-     excludeFields.forEach(el => delete queryObj[el]);
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-     const query = Product.find(JSON.parse(queryStr));
+    // Step 1: Copy all query parameters from the request object
+    const queryObj = { ...req.query };
+    // Example: If req.query is { price: { gte: '100' }, page: '2', sort: 'price' },
+    // queryObj will now be { price: { gte: '100' }, page: '2', sort: 'price' }
 
-     // Sorting
-     
-     const product = await query;
+    // Step 2: Define fields to exclude from filtering
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    // These fields are used for other purposes like pagination, sorting, etc., and should not be part of the filtering logic.
+
+    // Step 3: Remove excluded fields from the query object
+    excludeFields.forEach((el) => delete queryObj[el]);
+    // Example: After this step, queryObj will be { price: { gte: '100' } }
+
+    // Step 4: Convert the query object to a JSON string for easier manipulation
+    let queryStr = JSON.stringify(queryObj);
+    // Example: queryStr will now be '{"price":{"gte":"100"}}'
+
+    // Step 5: Replace comparison operators (gte, gt, lte, lt) with MongoDB-compatible operators ($gte, $gt, $lte, $lt)
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // Explanation: The regex \b(gte|gt|lte|lt)\b matches exact words like 'gte', 'gt', etc.
+    // Example: queryStr becomes '{"price":{"$gte":"100"}}'
+
+    // Step 6: Parse the modified query string back into an object
+    // Use the object with MongoDB's `find` method to filter data in the database
+    const query = Product.find(JSON.parse(queryStr));
+    // Example: The final query will be Product.find({ price: { $gte: '100' } });
+
+    // Sorting
+
+    const product = await query;
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-export { createProduct, getProducts, getAllProducts, updateProduct, deleteProduct };
+export {
+  createProduct,
+  getProducts,
+  getAllProducts,
+  updateProduct,
+  deleteProduct,
+};
