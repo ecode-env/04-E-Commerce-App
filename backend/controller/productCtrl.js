@@ -131,8 +131,23 @@ const getAllProducts = asyncHandler(async (req, res) => {
       query = query.select("-__v");
       // Explanation: The `__v` field is often used for internal versioning in MongoDB documents.
     }
+    
+    // -----------------<< Pagination >>----------------
+    
+    const page = req.query.page;
+
+    const limit = req.query.limit;
+
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+    if(req.query.page){
+      const productCounter = await Product.countDocuments();
+      if( skip >= productCounter) throw new Error('This page not found')
+    }
 
     const product = await query;
+
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
