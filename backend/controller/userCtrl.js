@@ -211,7 +211,6 @@ const updatePassword = asyncHandler(async (req, res) => {
 
   // Extract the password from the request body
   const { password } = req.body;
-  console.log(password);
 
   // Validate the provided MongoDB ID to ensure it's in the correct format
   validateMongoDBid(_id);
