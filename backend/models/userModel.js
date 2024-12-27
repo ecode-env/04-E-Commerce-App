@@ -72,7 +72,15 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.isPasswordMatch = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password); // Compare entered password with hashed password
 };
-
+userSchema.methods.createPasswordResetToken = async function () {
+const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.passwordResetExpires = Date.now() + 30 * 60 * 1000;
+  return resetToken; // Reset password
+};
 // Create and export the User model
 const User = model("User", userSchema);
 export default User;
