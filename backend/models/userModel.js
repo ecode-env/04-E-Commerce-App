@@ -1,5 +1,6 @@
 import mongoose from "mongoose"; // Importing Mongoose library
 import bcrypt from "bcrypt"; // Importing Bcrypt library for hashing passwords
+import crypto from 'crypto';
 
 // Access Schema and ObjectId from Mongoose
 const { Schema, model, Types } = mongoose;
