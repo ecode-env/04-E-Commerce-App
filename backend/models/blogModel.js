@@ -44,7 +44,17 @@ var blogSchema = new mongoose.Schema({
         type: String,
         default: 'Admin'
     }
-});
+},
+{
+    toJSON: {
+        virtuals: true,
+    },
+    toObject: {
+        virtuals: true
+    },
+    timestamps: true,
+}
+);
 
 //Export the model
 const Blog = model('Blog', blogSchema);
