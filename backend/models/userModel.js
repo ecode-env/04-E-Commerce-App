@@ -5,51 +5,56 @@ import bcrypt from "bcrypt"; // Importing Bcrypt library for hashing passwords
 const { Schema, model, Types } = mongoose;
 
 // Declare the Schema of the Mongo model
-const userSchema = new Schema({
-  firstName: {
-    type: String,
-    required: true,
+const userSchema = new Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    mobile: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      default: "user",
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    cart: {
+      type: Array,
+      default: [],
+    },
+    refreshToken: {
+      type: String,
+    },
+    address: [{ type: Schema.Types.ObjectId, ref: "Address" }], // Fixed usage of ObjectId
+    wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }], // Fixed usage of ObjectId
+    refreshToken: { type: String },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  mobile: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    default: 'user',
-  },
-  isBlocked: {
-    type: Boolean,
-    default: false,
-  },
-  cart: {
-    type: Array,
-    default: [],
-  },
-  refreshToken:{
-    type: String,
-  },
-  address: [{ type: Schema.Types.ObjectId, ref: "Address" }], // Fixed usage of ObjectId
-  wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }], // Fixed usage of ObjectId
-  refreshToken: { type: String,},
-},
-{
-  timestamps: true, // Include timestamps for created and updated fields
-});
+  {
+    timestamps: true, // Include timestamps for created and updated fields
+  }
+);
 
 // Hash the password before saving it to the database
 userSchema.pre("save", async function (next) {
