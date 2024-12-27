@@ -9,13 +9,15 @@ import {
   blockUser,
   unblockUser,
   handlerRefreshToken,
-  logoutUser
+  logoutUser,
+  updatePassword,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/register", createUser);
+router.post("/password", authMiddleware, updatePassword);
 router.post("/login", loginUserCtrl);
 router.get("/all-users", getAllUsers);
 router.get("/refresh",handlerRefreshToken);
