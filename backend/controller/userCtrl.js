@@ -202,6 +202,36 @@ const unblockUser = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+//-------------update user password ----------------------------
+const updatePassword = asyncHandler(async (req, res) => {
+   // Destructure the user ID from the authenticated user object in the request
+const { _id } = req.user; 
+
+// Extract the password from the request body
+const password = req.body; 
+
+// Validate the provided MongoDB ID to ensure it's in the correct format
+validateMongoDBid(_id); 
+
+// Find the user in the database by their ID
+const user = await User.findById(_id); 
+
+// Check if a new password is provided in the request
+if (password) { 
+  // Update the user's password with the new value
+  user.password = password; 
+  
+  // Save the updated user record to the database
+  const updatePassword = await user.save(); 
+  
+  // Respond with the updated user object as JSON
+  res.json(updatePassword); 
+} else {
+  // If no password is provided, return the user object as is
+  res.json(user); 
+}
+
+  });
 
 export {
   createUser,
@@ -214,4 +244,5 @@ export {
   unblockUser,
   handlerRefreshToken,
   logoutUser,
+  updatePassword
 };
