@@ -1,7 +1,7 @@
 import Product from "../models/productModel.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
-
+import validateMongoDBid from '../utils/validateMongodbid.js'
 // Create product
 const createProduct = asyncHandler(async (req, res) => {
   try {
