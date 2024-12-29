@@ -6,6 +6,7 @@ import colors from 'colors';
 import dbConnect from './config/dbConnect.js';
 import authRouter from './routes/authRoute.js';
 import productRouter from './routes/productRoute.js';
+import blogRouter from './routes/blogRoute.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 app.use('/api/user', authRouter);
 app.use('/api/product', productRouter);
+app.use('/api/blog', blogRouter);
 
 app.use(notFound);
 app.use(errorHandler);
