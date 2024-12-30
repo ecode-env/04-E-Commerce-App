@@ -57,5 +57,17 @@ const getCategory = asyncHandler(async (req, res) => {
 });
 
 
+// Get all product categories
+
+const getAllCategories = asyncHandler(async (req, res) => {
+    try {
+        const getAllCategories = await Category.find();
+        res.json(getAllCategories);
+    } catch (error) {
+      throw new Error(error);
+        
+    }
+});
+
 // Export
-export { createCategory, updateCategory, deleteCategory, getCategory};
+export { createCategory, updateCategory, deleteCategory, getCategory,getAllCategories};
