@@ -7,6 +7,7 @@ import dbConnect from './config/dbConnect.js';
 import authRouter from './routes/authRoute.js';
 import productRouter from './routes/productRoute.js';
 import blogRouter from './routes/blogRouter.js';
+import blogCatRoute from './routes/blogCatRoute.js';
 import categoryRouter from './routes/productCategoryRoute.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
@@ -28,6 +29,7 @@ app.use('/api/user', authRouter);
 app.use('/api/product', productRouter);
 app.use('/api/blog', blogRouter);
 app.use('/api/category', categoryRouter);
+app.use('/api/blog-category', blogCatRoute);
 
 app.use(notFound);
 app.use(errorHandler);
