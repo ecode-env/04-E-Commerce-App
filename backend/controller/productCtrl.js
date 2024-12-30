@@ -18,6 +18,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDBid(id)
   try {
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
@@ -42,6 +43,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 // Delete product
 const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDBid(id)
   try {
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
@@ -59,6 +61,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // Get product by id
 const getProducts = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDBid(id)
   try {
     const findProduct = await Product.findById(id);
     res.status(201).json(findProduct);
