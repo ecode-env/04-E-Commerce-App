@@ -15,5 +15,5 @@ var productCategorySchema = new mongoose.Schema(
 );
 
 //Export the model
-const Category = model("Category", productCategorySchema);
+const Category = model("PCategory", productCategorySchema);
 export default Category;
