@@ -27,4 +27,4 @@ const updateCategory = asyncHandler(async (req, res) => {
   }
 });
 
-export { createCategory };
+export { createCategory, updateCategory };
