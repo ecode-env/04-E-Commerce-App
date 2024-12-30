@@ -3,6 +3,7 @@ import Category from '../models/productCategoryModel.js';
 import validateMongoDBid from '../utils/validateMongodbid.js'
 
 
+// Create a new product category
 
 const createCategory = asyncHandler(async (req, res) => {
     try {
