@@ -8,6 +8,6 @@ router.put('/:id',authMiddleware ,isAdmin,updateBlog);
 router.get('/:id' ,getBlog);
 router.get('/' ,getAllBlogs);
 router.delete('/:id',authMiddleware ,isAdmin ,deleteBlog);
-router.put('/likes',authMiddleware ,isAdmin ,likeBlog);
+router.patch('/likes',authMiddleware ,isAdmin ,likeBlog);
 
 export default router;

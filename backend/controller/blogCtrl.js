@@ -83,6 +83,11 @@ const likeBlog = asyncHandler(async (req, res) => {
   // Check if the user has already disliked the blog
   const alreadyDisLiked = blog?.disLikes?.includes(loginUserId?.toString());
 
+  // Check if the user already disliked the blog
+  // const alreadyDisLiked = await blog?.disLikes?.find(
+  //   (userId) => userId?.toString() === loginUserId?.toString()
+  // );
+
   // If the user has already disliked the blog, remove the dislike
   if (alreadyDisLiked) {
     const blog = await Blog.findByIdAndUpdate(
@@ -122,5 +127,7 @@ const likeBlog = asyncHandler(async (req, res) => {
     res.json(blog); // Send the updated blog as a response
   }
 });
+
+//
 
 export { createBlog, updateBlog, getBlog, getAllBlogs, deleteBlog, likeBlog };
