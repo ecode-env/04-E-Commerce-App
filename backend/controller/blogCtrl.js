@@ -17,6 +17,7 @@ const createBlog = asyncHandler(async (req, res) => {
 
 const updateBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDBid(id)
   try {
     const updateBlog = await Blog.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -31,9 +32,9 @@ const updateBlog = asyncHandler(async (req, res) => {
 
 const getBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
+  validateMongoDBid(id)
   try {
-    const getBlog = await Blog.findById(id);
+    const getBlog = await Blog.findById(id).populate("likes").populate("disLikes");
     await Blog.findByIdAndUpdate(id, { $inc: { numView: 1 } }, { new: true });
     res.json(getBlog);
   } catch (error) {
@@ -70,6 +71,7 @@ const deleteBlog = asyncHandler(async (req, res) => {
 const likeBlog = asyncHandler(async (req, res) => {
   // Extract the blog ID from the request body
   const { blogId } = req.body;
+  validateMongoDBid(blogId)
 
   // Find the blog by its ID
   const blog = await Blog.findById(blogId);
@@ -133,6 +135,7 @@ const likeBlog = asyncHandler(async (req, res) => {
 const dislikeBlog = asyncHandler(async (req, res) => {
   // Extract the blog ID from the request body
   const { blogId } = req.body;
+  validateMongoDBid(blogId);
 
   // Find the blog by its ID
   const blog = await Blog.findById(blogId);
