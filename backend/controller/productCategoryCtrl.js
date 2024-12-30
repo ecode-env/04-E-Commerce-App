@@ -41,4 +41,21 @@ const deleteCategory = asyncHandler(async (req, res) => {
   }
 });
 
-export { createCategory, updateCategory, deleteCategory };
+
+// Get a single product category
+
+const getCategory = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    validateMongoDBid(id);
+    try {
+      const getCategory = await Category.findById(id);
+      res.json(getCategory);
+    } catch (error) {
+      throw new Error(error);
+    }
+  
+});
+
+
+// Export
+export { createCategory, updateCategory, deleteCategory, getCategory};
