@@ -7,9 +7,10 @@ import dbConnect from './config/dbConnect.js';
 import authRouter from './routes/authRoute.js';
 import productRouter from './routes/productRoute.js';
 import blogRouter from './routes/blogRouter.js';
-import blogCatRoute from './routes/blogCatRoute.js';
-import brandRoute from './routes/brandRoute.js';
+import blogCatRouter from './routes/blogCatRoute.js';
+import brandRouter from './routes/brandRoute.js';
 import categoryRouter from './routes/productCategoryRoute.js';
+import couponRouter from './routes/couponRoute.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
@@ -30,8 +31,11 @@ app.use('/api/user', authRouter);
 app.use('/api/product', productRouter);
 app.use('/api/blog', blogRouter);
 app.use('/api/category', categoryRouter);
-app.use('/api/blog-category', blogCatRoute);
-app.use('/api/brand', brandRoute);
+app.use('/api/blog-category', blogCatRouter);
+app.use('/api/brand', brandRouter);
+app.use('/api/coupon', couponRouter);
+
+
 
 app.use(notFound);
 app.use(errorHandler);
