@@ -16,5 +16,12 @@ const deleteCoupon = asyncHandler(async (req, res) => {});
 const getCoupon = asyncHandler(async (req, res) => {});
 
 
+// Get all coupons
+const getAllCoupons = asyncHandler(async (req, res) => {});
+
+
+
+
+
 
 export { createCoupon, updateCoupon, deleteCoupon, getCoupon, getAllCoupons };
