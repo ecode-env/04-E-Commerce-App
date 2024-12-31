@@ -24,7 +24,14 @@ const getCoupon = asyncHandler(async (req, res) => {});
 
 
 // Get all coupons
-const getAllCoupons = asyncHandler(async (req, res) => {});
+const getAllCoupons = asyncHandler(async (req, res) => {
+    try {
+        const getAllCoupons = await Coupon.find();
+        res.status(200).json(getAllCoupons);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 
 
