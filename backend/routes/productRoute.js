@@ -7,6 +7,7 @@ import {
   updateProduct,
   deleteProduct,
   addToWishList,
+  rating,
 } from "../controller/productCtrl.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get("/", getAllProducts);
 router.post("/:id", authMiddleware, isAdmin, updateProduct);
 router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
 router.put('/wishlist',authMiddleware, addToWishList)
+router.put('/rating',authMiddleware, rating)
 
 export default router;
