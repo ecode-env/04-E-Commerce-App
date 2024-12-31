@@ -158,6 +158,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
   }
 });
 
+// Add to wishlist
+
 const addToWishList = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { prodId } = req.body;
