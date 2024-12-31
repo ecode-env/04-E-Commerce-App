@@ -2,7 +2,7 @@ import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
-import validateMongoDBid from '../utils/validateMongodbid.js'
+import validateMongoDBid from "../utils/validateMongodbid.js";
 // Create product
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -19,7 +19,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  validateMongoDBid(id)
+  validateMongoDBid(id);
   try {
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
@@ -44,7 +44,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 // Delete product
 const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  validateMongoDBid(id)
+  validateMongoDBid(id);
   try {
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
@@ -62,7 +62,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // Get product by id
 const getProducts = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  validateMongoDBid(id)
+  validateMongoDBid(id);
   try {
     const findProduct = await Product.findById(id);
     res.status(201).json(findProduct);
@@ -135,9 +135,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
       query = query.select("-__v");
       // Explanation: The `__v` field is often used for internal versioning in MongoDB documents.
     }
-    
+
     // -----------------<< Pagination >>----------------
-    
+
     const page = req.query.page;
 
     const limit = req.query.limit;
@@ -145,9 +145,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
 
     query = query.skip(skip).limit(limit);
-    if(req.query.page){
+    if (req.query.page) {
       const productCounter = await Product.countDocuments();
-      if( skip >= productCounter) throw new Error('This page not found')
+      if (skip >= productCounter) throw new Error("This page not found");
     }
 
     const product = await query;
@@ -172,18 +172,79 @@ const addToWishList = asyncHandler(async (req, res) => {
         _id,
         { $pull: { wishlist: prodId } },
         { new: true }
-      )
-      res.json(user)
-    }else{
+      );
+      res.json(user);
+    } else {
       const user = await User.findByIdAndUpdate(
         _id,
         { $push: { wishlist: prodId } },
         { new: true }
-      )
-      res.json(user)
+      );
+      res.json(user);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Rating product
+
+const rating = asyncHandler(async (req, res) => {
+  // Extract user ID from the request object
+  const { _id } = req.user;
+
+  // Extract product ID and star rating from the request body
+  const { prodId, star } = req.body;
+
+  // Validate the user ID to ensure it's a valid MongoDB ObjectId
+  validateMongoDBid(_id);
+
+  try {
+    // Find the product in the database by its ID
+    const product = await Product.findById(prodId);
+
+    // Check if the user has already rated this product
+    const alreadyRated = product.ratings.find(
+      (userId) => userId.postedBy.toString() === _id.toString()
+    );
+
+    if (alreadyRated) {
+      // If the user has already rated, update their existing rating
+      const updateProduct = await Product.updateOne(
+        {
+          ratings: { $elemMatch: alreadyRated }, // Match the specific rating
+        },
+        {
+          $set: {
+            "ratings.$.star": star, // Update the star field of the matched rating
+          },
+        },
+        { new: true } // Option to return the updated document (doesn't work with `updateOne`)
+      );
+
+      // Send the updated product data as a JSON response
+      res.json(updateProduct);
+    } else {
+      // If the user has not rated, add a new rating to the product
+      const updateProduct = await Product.findByIdAndUpdate(
+        prodId,
+        {
+          $push: {
+            ratings: {
+              star: star, // Add the star rating
+              postedBy: _id, // Associate the rating with the user
+            },
+          },
+        },
+        { new: true } // Return the updated document
+      );
+
+      // Send the updated product data as a JSON response
+      res.json(updateProduct);
+    }
+  } catch (error) {
+    // Handle any errors that occur during the process
+    res.status(500).json(error);
   }
 });
 
@@ -194,5 +255,6 @@ export {
   getAllProducts,
   updateProduct,
   deleteProduct,
-  addToWishList
+  addToWishList,
+  rating,
 };
