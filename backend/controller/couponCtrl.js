@@ -5,6 +5,8 @@ import asyncHandler from "express-async-handler";
 // Create a new coupon
 const createCoupon = asyncHandler(async (req, res) => {});
 
+// Update a coupon
+const updateCoupon = asyncHandler(async (req, res) => {});
 
 
 
