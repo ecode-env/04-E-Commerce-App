@@ -8,7 +8,8 @@ const createCoupon = asyncHandler(async (req, res) => {});
 // Update a coupon
 const updateCoupon = asyncHandler(async (req, res) => {});
 
-
+// Delete a coupon
+const deleteCoupon = asyncHandler(async (req, res) => {});
 
 
 
