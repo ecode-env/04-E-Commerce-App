@@ -193,8 +193,8 @@ const rating = asyncHandler(async (req, res) => {
   // Extract user ID from the request object
   const { _id } = req.user;
 
-  // Extract product ID and star rating from the request body
-  const { prodId, star } = req.body;
+  // Extract product ID, comment and star rating from the request body
+  const { prodId, star,comment } = req.body;
 
   // Validate the user ID to ensure it's a valid MongoDB ObjectId
   validateMongoDBid(_id);
@@ -210,38 +210,42 @@ const rating = asyncHandler(async (req, res) => {
 
     if (alreadyRated) {
       // If the user has already rated, update their existing rating
-      const updateProduct = await Product.updateOne(
+   await Product.updateOne(
         {
           ratings: { $elemMatch: alreadyRated }, // Match the specific rating
         },
         {
           $set: {
             "ratings.$.star": star, // Update the star field of the matched rating
+            "ratings.$.comment": comment, // Update the comment field of the matched rating
           },
         },
         { new: true } // Option to return the updated document (doesn't work with `updateOne`)
       );
-
-      // Send the updated product data as a JSON response
-      res.json(updateProduct);
     } else {
       // If the user has not rated, add a new rating to the product
-      const updateProduct = await Product.findByIdAndUpdate(
+      await Product.findByIdAndUpdate(
         prodId,
         {
           $push: {
             ratings: {
               star: star, // Add the star rating
+              comment: comment, // Add the comment
               postedBy: _id, // Associate the rating with the user
             },
           },
         },
         { new: true } // Return the updated document
       );
-
-      // Send the updated product data as a JSON response
-      res.json(updateProduct);
     }
+    const getAllRatings = await Product.findById(prodId);
+    const totalRating = getAllRatings.ratings.length;
+    const ratingSum = getAllRatings.ratings.map(item => item.star).reduce((prev, curr) => curr + prev, 0);
+    const actualRating = Math.round(ratingSum / totalRating);
+    const finalRate = await Product.findByIdAndUpdate(prodId, {
+      totalRating: actualRating,
+    },{new: true});
+    res.json(finalRate);
   } catch (error) {
     // Handle any errors that occur during the process
     res.status(500).json(error);
