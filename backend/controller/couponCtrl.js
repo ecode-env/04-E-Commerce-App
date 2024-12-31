@@ -1,9 +1,16 @@
-import Coupon from "../models/couponModel";
+import Coupon from "../models/couponModel.js";
 import validateMongoDBid from "../utils/validateMongodbid.js";
 import asyncHandler from "express-async-handler";
 
 // Create a new coupon
-const createCoupon = asyncHandler(async (req, res) => {});
+const createCoupon = asyncHandler(async (req, res) => {
+    try {
+        const newCoupon = await Coupon.create(req.body);
+        res.status(201).json(newCoupon);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 // Update a coupon
 const updateCoupon = asyncHandler(async (req, res) => {});
