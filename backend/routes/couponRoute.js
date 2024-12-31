@@ -12,6 +12,7 @@ const router = express.Router();
 
 
 router.post("/",authMiddleware, isAdmin,createCoupon);
+router.get('/', authMiddleware, isAdmin,getAllCoupons);
 
 
 export default router;
