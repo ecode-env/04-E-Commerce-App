@@ -13,7 +13,16 @@ const createCoupon = asyncHandler(async (req, res) => {
 });
 
 // Update a coupon
-const updateCoupon = asyncHandler(async (req, res) => {});
+const updateCoupon = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    validateMongoDBid(id);
+    try {
+        const updatedCoupon = await Coupon.findByIdAndUpdate(id, req.body, { new: true });
+        res.json(updatedCoupon);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 // Delete a coupon
 const deleteCoupon = asyncHandler(async (req, res) => {});
