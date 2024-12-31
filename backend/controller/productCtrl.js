@@ -1,4 +1,5 @@
 import Product from "../models/productModel.js";
+import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 import validateMongoDBid from '../utils/validateMongodbid.js'
@@ -157,10 +158,39 @@ const getAllProducts = asyncHandler(async (req, res) => {
   }
 });
 
+const addToWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { prodId } = req.body;
+  validateMongoDBid(_id);
+  try {
+    const user = await User.findById(_id);
+    const alreadyAdded = user.wishlist.find((id) => id.toString() === prodId);
+    if (alreadyAdded) {
+      const user = await User.findByIdAndUpdate(
+        _id,
+        { $pull: { wishlist: prodId } },
+        { new: true }
+      )
+      res.json(user)
+    }else{
+      const user = await User.findByIdAndUpdate(
+        _id,
+        { $push: { wishlist: prodId } },
+        { new: true }
+      )
+      res.json(user)
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 export {
   createProduct,
   getProducts,
   getAllProducts,
   updateProduct,
   deleteProduct,
+  addToWishList
 };

@@ -6,6 +6,7 @@ import {
   getAllProducts,
   updateProduct,
   deleteProduct,
+  addToWishList,
 } from "../controller/productCtrl.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get("/:id", getProducts);
 router.get("/", getAllProducts);
 router.post("/:id", authMiddleware, isAdmin, updateProduct);
 router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
+router.put('/wishlist',authMiddleware, addToWishList)
 
 export default router;
