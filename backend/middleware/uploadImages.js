@@ -27,3 +27,7 @@ const uploadPhoto = multer({
     fileFilter: multerFilter,
     limits: { fileSize: 2000000 }, // Limit file size to 2 MB
 });
+
+
+
+export default uploadPhoto;
