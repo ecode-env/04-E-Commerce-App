@@ -252,6 +252,9 @@ const rating = asyncHandler(async (req, res) => {
   }
 });
 
+const uploadImages = asyncHandler(async (req, res) => { 
+  console.log(req.files)
+});
 
 export {
   createProduct,
@@ -261,4 +264,5 @@ export {
   deleteProduct,
   addToWishList,
   rating,
+  uploadImages,
 };
