@@ -84,4 +84,4 @@ const blogImgResize = async (req, res, next) => {
   }
 };
 
-export { uploadPhoto, blogImgResize };
+export { uploadPhoto, blogImgResize, productImgResize };
