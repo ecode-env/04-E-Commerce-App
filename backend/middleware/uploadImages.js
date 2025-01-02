@@ -30,59 +30,58 @@ const uploadPhoto = multer({
   limits: { fileSize: 2000000 }, // Limit file size to 2 MB
 });
 
-
 const productImgResize = async (req, res, next) => {
-    try {
-      if (!req.files || req.files.length === 0) return next(); // Ensure files exist
-  
-      // Process all uploaded files
-      await Promise.all(
-        req.files.map(async (file) => {
-          const outputFilePath = `public/images/products/${file.filename}`;
-  
-          await sharp(file.path)
-            .resize(300, 300) // Resize to 300x300
-            .toFormat("jpeg") // Convert to JPEG
-            .jpeg({ quality: 90 }) // Set JPEG quality
-            .toFile(outputFilePath); // Save processed image
-  
-          // Optionally remove the original file after processing
-          await fs.unlink(file.path);
-        })
-      );
-  
-      next(); // Move to the next middleware
-    } catch (error) {
-      res.status(500).send("Image processing failed.");
-    }
-  };
+  try {
+    if (!req.files || req.files.length === 0) return next(); // Ensure files exist
 
+    // Process all uploaded files
+    await Promise.all(
+      req.files.map(async (file) => {
+        const outputFilePath = `public/images/products/${file.filename}`;
 
-  const blogImgResize = async (req, res, next) => {
-    try {
-      if (!req.files || req.files.length === 0) return next(); // Ensure files exist
-  
-      // Process all uploaded files
-      await Promise.all(
-        req.files.map(async (file) => {
-          const outputFilePath = `public/images/blogs/${file.filename}`;
-  
-          await sharp(file.path)
-            .resize(300, 300) // Resize to 300x300
-            .toFormat("jpeg") // Convert to JPEG
-            .jpeg({ quality: 90 }) // Set JPEG quality
-            .toFile(outputFilePath); // Save processed image
-  
-          // Optionally remove the original file after processing
-          await fs.unlink(file.path);
-        })
-      );
-  
-      next(); // Move to the next middleware
-    } catch (error) {
-      res.status(500).send("Image processing failed.");
-    }
-  };
+        await sharp(file.path)
+          .resize(300, 300) // Resize to 300x300
+          .toFormat("jpeg") // Convert to JPEG
+          .jpeg({ quality: 90 }) // Set JPEG quality
+          .toFile(outputFilePath); // Save processed image
 
+        // Optionally remove the original file after processing
+        await fs.unlink(file.path);
+      })
+    );
 
-export { uploadPhoto };
+    next(); // Move to the next middleware
+  } catch (error) {
+    res.status(500).send("Image processing failed.");
+  }
+};
+
+// Resize images for blog posts
+
+const blogImgResize = async (req, res, next) => {
+  try {
+    if (!req.files || req.files.length === 0) return next(); // Ensure files exist
+
+    // Process all uploaded files
+    await Promise.all(
+      req.files.map(async (file) => {
+        const outputFilePath = `public/images/blogs/${file.filename}`;
+
+        await sharp(file.path)
+          .resize(300, 300) // Resize to 300x300
+          .toFormat("jpeg") // Convert to JPEG
+          .jpeg({ quality: 90 }) // Set JPEG quality
+          .toFile(outputFilePath); // Save processed image
+
+        // Optionally remove the original file after processing
+        await fs.unlink(file.path);
+      })
+    );
+
+    next(); // Move to the next middleware
+  } catch (error) {
+    res.status(500).send("Image processing failed.");
+  }
+};
+
+export { uploadPhoto, blogImgResize };
