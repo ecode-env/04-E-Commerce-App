@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import validateMongoDBid from "../utils/validateMongodbid.js";
 import cloudinaryUploadImage from "../utils/cloudinary.js";
+import fs from "fs";
 
 // Create a new blog
 const createBlog = asyncHandler(async (req, res) => {
@@ -200,6 +201,7 @@ const uploadImages = asyncHandler(async (req, res) => {
       const { path } = file;
       const newPath = await uploader(path);
       urls.push(newPath);
+      fs.unlinkSync(path);
     }
     const findBlog = await Blog.findByIdAndUpdate(id, {
       images: urls.map((file) => {
