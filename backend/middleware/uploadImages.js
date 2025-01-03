@@ -3,7 +3,7 @@ import sharp from "sharp";
 import path from "path";
 import fs from "fs/promises";
 
-// Configure storage for uploaded files
+// Configures where and how uploaded files are stored.
 const multerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "../public/images")); // Save files to `public/images`
