@@ -15,6 +15,8 @@ import { productImgResize, uploadPhoto } from "../middleware/uploadImages.js";
 const router = express.Router();
 
 router.post("/", authMiddleware, isAdmin, createProduct);
+
+// Updated image upload route with logging
 router.put(
   "/upload/:id",
   authMiddleware, // Authenticate user
@@ -23,6 +25,7 @@ router.put(
   productImgResize, // Resize and process images
   uploadImages
 );
+
 router.get("/:id", getProducts);
 router.get("/", getAllProducts);
 router.post("/:id", authMiddleware, isAdmin, updateProduct);
