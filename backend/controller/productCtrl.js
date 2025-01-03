@@ -254,6 +254,8 @@ const rating = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Upload images
 const uploadImages = asyncHandler(async (req, res) => { 
   const { id } = req.params;
   validateMongoDBid(id);
