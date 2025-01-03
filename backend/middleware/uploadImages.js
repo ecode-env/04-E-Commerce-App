@@ -2,6 +2,20 @@ import multer from "multer";
 import sharp from "sharp";
 import path from "path";
 import fs from "fs/promises";
+import { fileURLToPath } from "url";
+
+// Simulate __dirname in ES Module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Helper function to ensure directory exists
+const ensureDirectoryExists = async (dirPath) => {
+  try {
+    await fs.mkdir(dirPath, { recursive: true });
+  } catch (err) {
+    console.error("Error creating directory:", err);
+  }
+};
 
 // Configures where and how uploaded files are stored.
 const multerStorage = multer.diskStorage({
@@ -30,6 +44,7 @@ const uploadPhoto = multer({
   limits: { fileSize: 2000000 }, // Limit file size to 2 MB
 });
 
+// Product Image Resize Middleware
 const productImgResize = async (req, res, next) => {
   try {
     if (!req.files || req.files.length === 0) return next(); // Ensure files exist
@@ -39,6 +54,10 @@ const productImgResize = async (req, res, next) => {
       req.files.map(async (file) => {
         const outputFilePath = `public/images/products/${file.filename}`;
 
+        // Ensure the destination directory exists
+        await ensureDirectoryExists(path.dirname(outputFilePath));
+
+        // Resize and convert the image
         await sharp(file.path)
           .resize(300, 300) // Resize to 300x300
           .toFormat("jpeg") // Convert to JPEG
@@ -52,12 +71,12 @@ const productImgResize = async (req, res, next) => {
 
     next(); // Move to the next middleware
   } catch (error) {
-    res.status(500).send("Image processing failed.");
+    console.error("Error during product image processing:", error);
+    res.status(500).send(`Image processing failed: ${error.message}`);
   }
 };
 
-// Resize images for blog posts
-
+// Blog Image Resize Middleware
 const blogImgResize = async (req, res, next) => {
   try {
     if (!req.files || req.files.length === 0) return next(); // Ensure files exist
@@ -67,6 +86,10 @@ const blogImgResize = async (req, res, next) => {
       req.files.map(async (file) => {
         const outputFilePath = `public/images/blogs/${file.filename}`;
 
+        // Ensure the destination directory exists
+        await ensureDirectoryExists(path.dirname(outputFilePath));
+
+        // Resize and convert the image
         await sharp(file.path)
           .resize(300, 300) // Resize to 300x300
           .toFormat("jpeg") // Convert to JPEG
@@ -80,8 +103,10 @@ const blogImgResize = async (req, res, next) => {
 
     next(); // Move to the next middleware
   } catch (error) {
-    res.status(500).send("Image processing failed.");
+    console.error("Error during blog image processing:", error);
+    res.status(500).send(`Image processing failed: ${error.message}`);
   }
 };
 
+// Export middleware functions
 export { uploadPhoto, blogImgResize, productImgResize };
