@@ -1,7 +1,7 @@
 import multer from "multer";
 import sharp from "sharp";
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
 import { fileURLToPath } from "url";
 
 // Simulate __dirname in ES Module
@@ -20,11 +20,10 @@ const multerStorage = multer.diskStorage({
   },
 });
 
-
 // Filter files by MIME type
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
-    cb(null, true); // Accept valid image files
+    cb(null, true);
   } else {
     cb({ message: "Unsupported file format" }, false); // Reject other files
   }
@@ -47,9 +46,6 @@ const productImgResize = async (req, res, next) => {
       req.files.map(async (file) => {
         const outputFilePath = `public/images/products/${file.filename}`;
 
-        // Ensure the destination directory exists
-        await ensureDirectoryExists(path.dirname(outputFilePath));
-
         // Resize and convert the image
         await sharp(file.path)
           .resize(300, 300) // Resize to 300x300
@@ -58,7 +54,12 @@ const productImgResize = async (req, res, next) => {
           .toFile(outputFilePath); // Save processed image
 
         // Optionally remove the original file after processing
-        await fs.unlink(file.path);
+        try {
+          await fs.unlink(file.path); // Delete the original file
+          console.log('Original file was deleted');
+        } catch (err) {
+          console.error('Error deleting the file:', err);
+        }
       })
     );
 
@@ -78,9 +79,6 @@ const blogImgResize = async (req, res, next) => {
     await Promise.all(
       req.files.map(async (file) => {
         const outputFilePath = `public/images/blogs/${file.filename}`;
-
-        // Ensure the destination directory exists
-        await ensureDirectoryExists(path.dirname(outputFilePath));
 
         // Resize and convert the image
         await sharp(file.path)
@@ -102,4 +100,4 @@ const blogImgResize = async (req, res, next) => {
 };
 
 // Export middleware functions
-export { uploadPhoto, blogImgResize, productImgResize };
+export { uploadPhoto, productImgResize, blogImgResize };

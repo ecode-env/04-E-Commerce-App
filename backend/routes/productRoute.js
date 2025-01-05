@@ -10,7 +10,10 @@ import {
   rating,
   uploadImages,
 } from "../controller/productCtrl.js";
-import { productImgResize, uploadPhoto } from "../middleware/uploadImages.js";
+import { 
+  productImgResize, 
+  uploadPhoto 
+} from "../middleware/uploadImages.js";
 
 const router = express.Router();
 

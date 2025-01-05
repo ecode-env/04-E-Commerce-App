@@ -257,34 +257,35 @@ const rating = asyncHandler(async (req, res) => {
 
 // Upload images
 const uploadImages = asyncHandler(async (req, res) => { 
-  const { id } = req.params;
-  validateMongoDBid(id); // Validate the MongoDB ID
+  console.log(req.files);
+  // const { id } = req.params;
+  // validateMongoDBid(id); // Validate the MongoDB ID
 
-  try {
-    const uploader = (path) => cloudinaryUploadImage(path, "images"); // Cloudinary image upload function
-    const urls = []; // Array to store image URLs
+  // try {
+  //   const uploader = (path) => cloudinaryUploadImage(path, "images"); // Cloudinary image upload function
+  //   const urls = []; // Array to store image URLs
 
-    const files = req.files; // Files uploaded via multer
+  //   const files = req.files; // Files uploaded via multer
 
-    for (const file of files) {
-      const { path } = file; // Get the path of each uploaded file
-      const newPath = await uploader(path); // Upload to Cloudinary and get the new path (URL)
-      urls.push(newPath.url); // Push the URL to the array
-      fs.unlinkSync(path); // Delete the file from the local storage
-    }
+  //   for (const file of files) {
+  //     const { path } = file; // Get the path of each uploaded file
+  //     const newPath = await uploader(path); // Upload to Cloudinary and get the new path (URL)
+  //     urls.push(newPath.url); // Push the URL to the array
+  //     fs.unlinkSync(path); // Delete the file from the local storage
+  //   }
 
-    // Update the product with the uploaded image URLs
-    const findProduct = await Product.findByIdAndUpdate(id, {
-      images: urls, // Update the images field with the Cloudinary URLs
-    }, { new: true });
+  //   // Update the product with the uploaded image URLs
+  //   const findProduct = await Product.findByIdAndUpdate(id, {
+  //     images: urls, // Update the images field with the Cloudinary URLs
+  //   }, { new: true });
 
-    // Send the updated product data back in the response
-    res.json(findProduct);
+  //   // Send the updated product data back in the response
+  //   res.json(findProduct);
 
-  } catch (error) {
-    console.error("Error uploading images:", error); // Log the error for debugging
-    res.status(500).json({ message: "Image upload failed", error: error.message }); // Send an error response
-  }
+  // } catch (error) {
+  //   console.error("Error uploading images:", error); // Log the error for debugging
+  //   res.status(500).json({ message: "Image upload failed", error: error.message }); // Send an error response
+  // }
 });
 
 export {
