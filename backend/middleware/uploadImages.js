@@ -8,25 +8,14 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Helper function to ensure directory exists
-const ensureDirectoryExists = async (dirPath) => {
-  try {
-    fs.mkdir(dirPath, { recursive: true });
-  } catch (err) {
-    console.error("Error creating directory:", err);
-  }
-};
-
 // Configures where and how uploaded files are stored.
 const multerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log("File destination:", path.join(__dirname, "../public/images"));
     cb(null, path.join(__dirname, "../public/images")); // Save files to `public/images`
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const generatedFilename = file.fieldname + "-" + uniqueSuffix + ".jpeg"; // Generate file name
-    console.log("Generated file name:", generatedFilename); // Log the generated filename
     cb(null, generatedFilename); // Save with the unique name
   },
 });
