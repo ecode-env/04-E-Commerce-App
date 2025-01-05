@@ -12,19 +12,19 @@ cloudinary.config({
 
 // Function to upload a file to Cloudinary
 const cloudinaryUploadImage = async (fileToUpload) => {
-    try {
-      // Await the Cloudinary upload method
-      const result = await cloudinary.uploader.upload(fileToUpload, {
-        resource_type: "auto", // Automatically detect the file type
-      });
-  
-      // Return the secure URL of the uploaded file
-      return { url: result.secure_url };
-    } catch (error) {
-      throw error; // Rethrow the error to be handled by the caller
-    }
-  };
-  
-  // Export the function for use in other parts of the application
-  export default cloudinaryUploadImage;
-  
+  return new Promise((resolve) => {
+    cloudinary.uploader.upload(fileToUpload, (result) => {
+      resolve(
+        {
+          url: result.secure_url,
+        },
+        {
+          resource_type: "auto",
+        }
+      );
+    });
+  });
+};
+
+// Export the function for use in other parts of the application
+export default cloudinaryUploadImage;
