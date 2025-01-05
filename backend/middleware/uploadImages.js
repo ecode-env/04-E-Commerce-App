@@ -56,9 +56,9 @@ const productImgResize = async (req, res, next) => {
         // Optionally remove the original file after processing
         try {
           await fs.unlink(file.path); // Delete the original file
-          console.log('Original file was deleted');
+          console.log("Original file was deleted");
         } catch (err) {
-          console.error('Error deleting the file:', err);
+          console.error("Error deleting the file:", err);
         }
       })
     );
@@ -88,7 +88,12 @@ const blogImgResize = async (req, res, next) => {
           .toFile(outputFilePath); // Save processed image
 
         // Optionally remove the original file after processing
-        await fs.unlink(file.path);
+        try {
+          await fs.unlink(file.path); // Delete the original file
+          console.log("Original file was deleted");
+        } catch (err) {
+          console.error("Error deleting the file:", err);
+        }
       })
     );
 
