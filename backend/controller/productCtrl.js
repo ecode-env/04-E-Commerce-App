@@ -258,25 +258,32 @@ const rating = asyncHandler(async (req, res) => {
 // Upload images
 const uploadImages = asyncHandler(async (req, res) => { 
   const { id } = req.params;
-  validateMongoDBid(id);
+  validateMongoDBid(id); // Validate the MongoDB ID
+
   try {
-    const uploader = (path) => cloudinaryUploadImage(path, "images");
-    const urls = [];
-    const files = req.files;
+    const uploader = (path) => cloudinaryUploadImage(path, "images"); // Cloudinary image upload function
+    const urls = []; // Array to store image URLs
+
+    const files = req.files; // Files uploaded via multer
+
     for (const file of files) {
-      const { path } = file;
-      const newPath = await uploader(path);
-      urls.push(newPath);
-      fs.unlinkSync(path);
+      const { path } = file; // Get the path of each uploaded file
+      const newPath = await uploader(path); // Upload to Cloudinary and get the new path (URL)
+      urls.push(newPath.url); // Push the URL to the array
+      fs.unlinkSync(path); // Delete the file from the local storage
     }
+
+    // Update the product with the uploaded image URLs
     const findProduct = await Product.findByIdAndUpdate(id, {
-      images: urls.map((file) => {
-        return file;
-      }),
+      images: urls, // Update the images field with the Cloudinary URLs
     }, { new: true });
+
+    // Send the updated product data back in the response
     res.json(findProduct);
+
   } catch (error) {
-    throw new Error(error);
+    console.error("Error uploading images:", error); // Log the error for debugging
+    res.status(500).json({ message: "Image upload failed", error: error.message }); // Send an error response
   }
 });
 
