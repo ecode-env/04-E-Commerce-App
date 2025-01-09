@@ -15,6 +15,7 @@ import {
   resetPassword,
   loginAdmin,
   getWishlist,
+  setUserAddress,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -36,6 +37,7 @@ router.get("/:id", authMiddleware, isAdmin, getSingleUser);
 
 router.delete("/:id",isAdmin, deleteUser);
 router.put("/:edit-user",authMiddleware, updateUser);
+router.put("/save-address",authMiddleware, setUserAddress);
 router.put("/block-user/:id",authMiddleware,isAdmin, blockUser);
 router.put("/unblock-user/:id",authMiddleware, isAdmin,unblockUser);
 
