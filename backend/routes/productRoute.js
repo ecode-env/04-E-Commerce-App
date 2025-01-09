@@ -22,10 +22,10 @@ router.post("/", authMiddleware, isAdmin, createProduct);
 // Updated image upload route with logging
 router.put(
   "/upload/:id",
-  authMiddleware, // Authenticate user
-  isAdmin, // Check for admin privileges
-  uploadPhoto.array("images", 10), // Upload up to 10 files
-  productImgResize, // Resize and process images
+  authMiddleware,
+  isAdmin,
+  uploadPhoto.array("images", 10),
+  productImgResize,
   uploadImages
 );
 

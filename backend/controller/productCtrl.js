@@ -3,8 +3,8 @@ import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 import validateMongoDBid from "../utils/validateMongodbid.js";
-import cloudinaryUploadImage from "../utils/cloudinary.js"
-import fs from "fs";
+import cloudinaryUploadImage from "../utils/cloudinary.js";
+import fs from 'fs'
 // Create product
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -17,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
+cloudinaryUploadImage 
 // Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -196,7 +196,7 @@ const rating = asyncHandler(async (req, res) => {
   const { _id } = req.user;
 
   // Extract product ID, comment and star rating from the request body
-  const { prodId, star,comment } = req.body;
+  const { prodId, star, comment } = req.body;
 
   // Validate the user ID to ensure it's a valid MongoDB ObjectId
   validateMongoDBid(_id);
@@ -212,7 +212,7 @@ const rating = asyncHandler(async (req, res) => {
 
     if (alreadyRated) {
       // If the user has already rated, update their existing rating
-   await Product.updateOne(
+      await Product.updateOne(
         {
           ratings: { $elemMatch: alreadyRated }, // Match the specific rating
         },
@@ -242,11 +242,17 @@ const rating = asyncHandler(async (req, res) => {
     }
     const getAllRatings = await Product.findById(prodId);
     const totalRating = getAllRatings.ratings.length;
-    const ratingSum = getAllRatings.ratings.map(item => item.star).reduce((prev, curr) => curr + prev, 0);
+    const ratingSum = getAllRatings.ratings
+      .map((item) => item.star)
+      .reduce((prev, curr) => curr + prev, 0);
     const actualRating = Math.round(ratingSum / totalRating);
-    const finalRate = await Product.findByIdAndUpdate(prodId, {
-      totalRating: actualRating,
-    },{new: true});
+    const finalRate = await Product.findByIdAndUpdate(
+      prodId,
+      {
+        totalRating: actualRating,
+      },
+      { new: true }
+    );
     res.json(finalRate);
   } catch (error) {
     // Handle any errors that occur during the process
@@ -254,39 +260,43 @@ const rating = asyncHandler(async (req, res) => {
   }
 });
 
-
 // Upload images
-const uploadImages = asyncHandler(async (req, res) => { 
-  console.log(req.files);
-  // const { id } = req.params;
-  // validateMongoDBid(id); // Validate the MongoDB ID
+const uploadImages = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDBid(id);
+  try {
+    const uploader = (path) => cloudinaryUploadImage(path); // Cloudinary image upload function
+    const urls = [];
 
-  // try {
-  //   const uploader = (path) => cloudinaryUploadImage(path, "images"); // Cloudinary image upload function
-  //   const urls = []; // Array to store image URLs
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
 
-  //   const files = req.files; // Files uploaded via multer
+      // Check if the file exists
+      if (!fs.existsSync(path)) {
+        return res.status(400).json({ message: `File not found: ${path}` });
+      }
 
-  //   for (const file of files) {
-  //     const { path } = file; // Get the path of each uploaded file
-  //     const newPath = await uploader(path); // Upload to Cloudinary and get the new path (URL)
-  //     urls.push(newPath.url); // Push the URL to the array
-  //     fs.unlinkSync(path); // Delete the file from the local storage
-  //   }
+      const newPath = await uploader(path); // Upload to Cloudinary
+      console.log(newPath);
+      urls.push(newPath.url);
+      await fs.unlink(path);
+    }
 
-  //   // Update the product with the uploaded image URLs
-  //   const findProduct = await Product.findByIdAndUpdate(id, {
-  //     images: urls, // Update the images field with the Cloudinary URLs
-  //   }, { new: true });
-
-  //   // Send the updated product data back in the response
-  //   res.json(findProduct);
-
-  // } catch (error) {
-  //   console.error("Error uploading images:", error); // Log the error for debugging
-  //   res.status(500).json({ message: "Image upload failed", error: error.message }); // Send an error response
-  // }
+    // Update the product with the uploaded image URLs
+    const findProduct = await Product.findByIdAndUpdate(
+      id,
+      { images: urls },
+      { new: true }
+    );
+    res.json(findProduct);
+  } catch (error) {
+    console.error("Error uploading images:", error);
+    res.status(500).json({ message: "Image upload failed", error: error.message });
+  }
 });
+
+
 
 export {
   createProduct,
