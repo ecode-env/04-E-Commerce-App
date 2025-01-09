@@ -1,12 +1,14 @@
 import asyncHandler from "express-async-handler";
+import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
+import Cart from "../models/cartModel.js";
+
 import generateToken from "../config/jwtToken.js";
 import validateMongoDBid from "../utils/validateMongodbid.js";
 import generateRefreshToken from "../config/refreshToken.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import sendEmail from "../controller/emailCtrl.js";
-
 
 // Create a new user
 const createUser = asyncHandler(async (req, res) => {
@@ -71,9 +73,9 @@ const loginAdmin = asyncHandler(async (req, res, next) => {
     // Find user by email
     const findAdmin = await User.findOne({ email });
 
-    if (!findAdmin) throw new Error('User not found');
+    if (!findAdmin) throw new Error("User not found");
 
-    if (findAdmin.role !== "admin") throw new Error('Not Authorized');
+    if (findAdmin.role !== "admin") throw new Error("Not Authorized");
 
     // Check if password matches
     const isMatch = await findAdmin.isPasswordMatch(password);
@@ -108,7 +110,6 @@ const loginAdmin = asyncHandler(async (req, res, next) => {
     next(error);
   }
 });
-
 
 // cookies handling
 
@@ -391,7 +392,37 @@ const getWishlist = asyncHandler(async (req, res) => {
 });
 
 // get user cart items
-const userCart = asyncHandler(async (req, res) => {});
+const userCart = asyncHandler(async (req, res, next) => {
+  const { cart } = req.body;
+  const { _id } = req.user;
+  validateMongoDBid(_id);
+
+  try {
+    let products = [];
+    const user = await User.findById(_id);
+
+    // If user already has a product cart, remove it
+    const alreadyExistCart = await Cart.findOne({ orderby: user._id });
+    if (alreadyExistCart) await alreadyExistCart.remove();
+
+    for (let i = 0; i < cart.length; i++) {
+      let object = {};
+      object.product = cart[i]._id;
+      object.quantity = cart[i].quantity;
+      object.color = cart[i].color;
+
+      let getPrice = await Product.findById(cart[i]._id).select("price");
+      console.log(getPrice)
+      object.price = getPrice.price;
+
+      products.push(object);
+    }
+
+    console.log(products);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 export {
   createUser,
@@ -410,4 +441,5 @@ export {
   loginAdmin,
   getWishlist,
   setUserAddress,
+  userCart,
 };
