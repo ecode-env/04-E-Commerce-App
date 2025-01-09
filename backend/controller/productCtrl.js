@@ -262,38 +262,7 @@ const rating = asyncHandler(async (req, res) => {
 
 // Upload images
 const uploadImages = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  validateMongoDBid(id);
-  try {
-    const uploader = (path) => cloudinaryUploadImage(path); // Cloudinary image upload function
-    const urls = [];
-
-    const files = req.files;
-    for (const file of files) {
-      const { path } = file;
-
-      // Check if the file exists
-      if (!fs.existsSync(path)) {
-        return res.status(400).json({ message: `File not found: ${path}` });
-      }
-
-      const newPath = await uploader(path); // Upload to Cloudinary
-      console.log(newPath);
-      urls.push(newPath.url);
-      await fs.unlink(path);
-    }
-
-    // Update the product with the uploaded image URLs
-    const findProduct = await Product.findByIdAndUpdate(
-      id,
-      { images: urls },
-      { new: true }
-    );
-    res.json(findProduct);
-  } catch (error) {
-    console.error("Error uploading images:", error);
-    res.status(500).json({ message: "Image upload failed", error: error.message });
-  }
+  console.log(req.files)
 });
 
 
