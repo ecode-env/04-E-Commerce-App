@@ -13,16 +13,15 @@ cloudinary.config({
 
 // Function to upload a file to Cloudinary
 const cloudinaryUploadImage = async (fileToUpload) => {
-  return new Promise((resolve) => {
-    cloudinary.uploader.upload(fileToUpload, (result) => {
-      resolve(
-        {
-          url: result.secure_url,
-        },
-        { resource_type: "auto" }
-      );
+  try {
+    const result = await cloudinary.uploader.upload(fileToUpload, {
+      resource_type: 'auto',
     });
-  });
+    return { url: result.secure_url };
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    throw error;
+  }
 };
 
 // Export the function for use in other parts of the application
