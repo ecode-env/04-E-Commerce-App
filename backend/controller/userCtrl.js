@@ -64,21 +64,25 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 
 // login admin user
 
-const loginAdmin = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+const loginAdmin = asyncHandler(async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
-  // Find user by email
-  const findAdmin = await User.findOne({ email });
+    // Find user by email
+    const findAdmin = await User.findOne({ email });
 
+    if (!findAdmin) throw new Error('User not found');
 
-  if(findAdmin?.role !== "admin") throw new Error('Not Authorized');
+    if (findAdmin.role !== "admin") throw new Error('Not Authorized');
 
-  // Check if user exists and password matches
-  if (findAdmin && (await findAdmin.isPasswordMatch(password))) {
+    // Check if password matches
+    const isMatch = await findAdmin.isPasswordMatch(password);
+    if (!isMatch) throw new Error("Invalid Credentials");
+
     // Password matches, send user data or token
-    const refreshToken = await generateRefreshToken(findAdmin?.id);
+    const refreshToken = await generateRefreshToken(findAdmin.id);
     const updateUser = await User.findByIdAndUpdate(
-      findAdmin?._id,
+      findAdmin._id,
       {
         refreshToken: refreshToken,
       },
@@ -86,21 +90,22 @@ const loginAdmin = asyncHandler(async (req, res) => {
         new: true,
       }
     );
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
     });
+
     res.json({
-      _id: findAdmin?._id,
-      firstName: findAdmin?.firstName,
-      lastName: findAdmin?.lastName,
-      email: findAdmin?.email,
-      mobile: findAdmin?.mobile,
-      token: generateToken(findAdmin?._id), // generate token
+      _id: findAdmin._id,
+      firstName: findAdmin.firstName,
+      lastName: findAdmin.lastName,
+      email: findAdmin.email,
+      mobile: findAdmin.mobile,
+      token: generateToken(findAdmin._id), // generate token
     });
-  } else {
-    // Invalid credentials
-    throw new Error("Invalid Credentials");
+  } catch (error) {
+    next(error);
   }
 });
 

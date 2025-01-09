@@ -13,6 +13,7 @@ import {
   updatePassword,
   forgotPasswordToken,
   resetPassword,
+  loginAdmin,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -24,6 +25,7 @@ router.put("/reset-password/:token", resetPassword);
 
 router.put("/password", authMiddleware, updatePassword);
 router.post("/login", loginUserCtrl);
+router.post("/admin-login", loginAdmin);
 router.get("/all-users", getAllUsers);
 router.get("/refresh",handlerRefreshToken);
 router.get('/logout', logoutUser)
