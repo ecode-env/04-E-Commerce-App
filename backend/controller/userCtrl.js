@@ -6,6 +6,9 @@ import generateRefreshToken from "../config/refreshToken.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import sendEmail from "../controller/emailCtrl.js";
+
+
+// Create a new user
 const createUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
   const findUser = await User.findOne({ email: email });
