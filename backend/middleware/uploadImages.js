@@ -46,6 +46,7 @@ const productImgResize = async (req, res, next) => {
         .toFile(`public/images/products/${file.filename}`);
     })
   );
+  next();
 };
 
 // Export middleware functions
