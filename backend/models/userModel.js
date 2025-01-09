@@ -45,7 +45,9 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
-    address: [{ type: Schema.Types.ObjectId, ref: "Address" }], // Fixed usage of ObjectId
+    address: {
+      type: String,
+    },
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }], // Fixed usage of ObjectId
     refreshToken: { type: String },
     passwordChangedAt: Date,
