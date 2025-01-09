@@ -390,6 +390,8 @@ const getWishlist = asyncHandler(async (req, res) => {
   }
 });
 
+// get user cart items
+const userCart = asyncHandler(async (req, res) => {});
 
 export {
   createUser,
