@@ -11,9 +11,18 @@ import {
   dislikeBlog,
   uploadImages,
 } from "../controller/blogCtrl.js";
-import { uploadPhoto } from "../middleware/uploadImages.js";
+import { uploadPhoto, blogImgResize } from "../middleware/uploadImages.js";
 
 router.post("/", authMiddleware, isAdmin, createBlog);
+
+router.put(
+  "/upload/:id",
+  authMiddleware,
+  isAdmin,
+  uploadPhoto.array("images", 2),
+  blogImgResize,
+  uploadImages
+);
 
 router.put("/:id", authMiddleware, isAdmin, updateBlog);
 router.get("/:id", getBlog);
