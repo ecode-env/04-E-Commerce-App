@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 import validateMongoDBid from "../utils/validateMongodbid.js";
 import cloudinaryUploadImage from "../utils/cloudinary.js";
-import fs from 'fs'
+import fs from "fs/promises";
 // Create product
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -17,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-cloudinaryUploadImage 
+cloudinaryUploadImage;
 // Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -262,10 +262,31 @@ const rating = asyncHandler(async (req, res) => {
 
 // Upload images
 const uploadImages = asyncHandler(async (req, res) => {
-  console.log(req.files)
+  const { id } = req.params;
+  validateMongoDBid(id);
+  try {
+    const uploader = (path) => cloudinaryUploadImage(path);
+    const urls = [];
+    const files = req.files;
+
+    for (const file of files) {
+      const { url } = await uploader(file.path);
+      urls.push(url);
+    
+    }
+
+    const findProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        images: urls.map((file) => file),
+      },
+      { new: true }
+    );
+    res.json(findProduct);
+  } catch (error) {
+    res.status(500).send({ error: "Image upload failed" });
+  }
 });
-
-
 
 export {
   createProduct,
