@@ -53,7 +53,7 @@ const productImgResize = async (req, res, next) => {
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
           .toFile(path.join(productsDir, file.filename));
-          
+        await fs.unlink(path.join(productsDir, file.filename));
       })
     );
 
@@ -84,7 +84,7 @@ const blogImgResize = async (req, res, next) => {
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
           .toFile(path.join(productsDir, file.filename));
-          
+        await fs.unlink(path.join(productsDir, file.filename));
       })
     );
 
