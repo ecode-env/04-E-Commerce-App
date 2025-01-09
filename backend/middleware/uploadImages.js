@@ -37,16 +37,30 @@ const uploadPhoto = multer({
 // Product Image Resize Middleware
 const productImgResize = async (req, res, next) => {
   if (!req.files) return next();
-  await Promise.all(
-    req.files.map(async (file, index) => {
-      await sharp(file.path)
-        .resize(300, 300)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/images/products/${file.filename}`);
-    })
-  );
-  next();
+
+  // Define the directory for resized images
+  const productsDir = path.join(__dirname, "../public/images/products");
+
+  try {
+    // Ensure the directory exists
+    await fs.mkdir(productsDir, { recursive: true });
+
+    // Resize and save each image
+    await Promise.all(
+      req.files.map(async (file) => {
+        await sharp(file.path)
+          .resize(300, 300)
+          .toFormat("jpeg")
+          .jpeg({ quality: 90 })
+          .toFile(path.join(productsDir, file.filename));
+      })
+    );
+
+    next();
+  } catch (error) {
+    console.error("Error during image processing:", error);
+    res.status(500).send({ error: "Image processing failed" });
+  }
 };
 
 // Export middleware functions
