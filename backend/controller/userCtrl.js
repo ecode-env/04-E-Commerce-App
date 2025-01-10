@@ -310,7 +310,7 @@ const updatePassword = asyncHandler(async (req, res) => {
   }
 });
 
-//-------------Forgat password ----------------
+//Forgat password
 
 const forgotPasswordToken = asyncHandler(async (req, res) => {
   const { email } = req.body; // Get the email from the request body
