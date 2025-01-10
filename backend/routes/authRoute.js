@@ -21,6 +21,7 @@ import {
   emptyCart,
   applyCoupon,
   createOrder,
+  getOrder,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -37,6 +38,7 @@ router.post('/cart', authMiddleware, userCart);
 router.post('/cart/apply-coupon', authMiddleware, applyCoupon);
 router.post('/cart/cash-order', authMiddleware, createOrder);
 router.get("/all-users", getAllUsers);
+router.get("/get-orders", authMiddleware, getOrder);
 router.get("/wishlist", authMiddleware, getWishlist);
 router.get("/cart", authMiddleware, getUserCart);
 
