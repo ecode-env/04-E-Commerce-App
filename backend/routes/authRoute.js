@@ -33,7 +33,7 @@ router.post("/forgot-password-token", forgotPasswordToken)
 router.put("/reset-password/:token", resetPassword);
 
 router.put("/password", authMiddleware, updatePassword);
-router.put('/update-order/:id', authMiddleware, isAdmin,updateOrderStatus);
+router.put('/order/update-order/:id', authMiddleware, isAdmin, updateOrderStatus);
 router.post("/login", loginUserCtrl);
 router.post("/admin-login", loginAdmin);
 router.post('/cart', authMiddleware, userCart);
