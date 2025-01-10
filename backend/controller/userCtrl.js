@@ -464,16 +464,25 @@ const getUserCart = asyncHandler(async (req, res) => {
 
 const emptyCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
+
+  // Validate MongoDB ID
   validateMongoDBid(_id);
+
   try {
+    // Find the user by ID
     const user = await User.findOne({ _id });
-    const cart = await Cart.findOneAndRemove({ orderby: user._id });
+
+    // Find and remove the user's cart
+    const cart = await Cart.findOneAndDelete({ orderby: user._id });
+
+    // Return the removed cart as a response
     res.json(cart);
   } catch (error) {
+    // Handle any errors
     throw new Error(error);
-    
   }
 });
+
 
 export {
   createUser,
