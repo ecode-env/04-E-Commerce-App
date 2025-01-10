@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
+import Coupon from "../models/couponModel.js";
 
 import generateToken from "../config/jwtToken.js";
 import validateMongoDBid from "../utils/validateMongodbid.js";
@@ -453,7 +454,9 @@ const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDBid(_id);
   try {
-    const cart = await Cart.findOne({ orderby: _id }).populate('products.product');
+    const cart = await Cart.findOne({ orderby: _id }).populate(
+      "products.product"
+    );
     res.json(cart);
   } catch (error) {
     throw new Error(error);
@@ -483,6 +486,47 @@ const emptyCart = asyncHandler(async (req, res) => {
   }
 });
 
+// Apply a coupon to the user's cart
+
+const applyCoupon = asyncHandler(async (req, res, next) => {
+  const { coupon } = req.body; // Extract the coupon code from the request body
+  const { _id } = req.user; // Get the user's ID from the request (assumes user is authenticated)
+
+  // Validate the MongoDB ID to ensure it's valid
+  validateMongoDBid(_id);
+
+  // Find the coupon in the database by its name
+  const validCoupon = await Coupon.findOne({ name: coupon });
+
+  // If the coupon is not found or is null, throw an error
+  if (!validCoupon) {
+    throw new Error("Invalid coupon code");
+  }
+
+  // Find the user in the database by their ID
+  const user = await User.findOne({ _id });
+
+  // Retrieve the user's cart, populating the products with their details
+  let {  cartTotal } = await Cart.findOne({
+    orderby: user._id,
+  }).populate("products.product");
+
+  // Calculate the total after applying the coupon discount
+  let totalAfterDiscount = (
+    cartTotal -
+    (cartTotal * validCoupon.discount) / 100
+  ).toFixed(2);
+
+  // Update the user's cart with the new total after discount
+  await Cart.findOneAndUpdate(
+    { orderby: user._id },
+    { totalAfterDiscount },
+    { new: true }
+  );
+
+  // Respond with the total after discount
+  res.json(totalAfterDiscount);
+});
 
 export {
   createUser,
@@ -504,4 +548,5 @@ export {
   userCart,
   getUserCart,
   emptyCart,
+  applyCoupon,
 };
