@@ -18,6 +18,7 @@ import {
   setUserAddress,
   userCart,
   getUserCart,
+  emptyCart,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -41,6 +42,7 @@ router.get('/logout', logoutUser);
 
 router.get("/:id", authMiddleware, isAdmin, getSingleUser);
 
+router.delete('/empty-cart', authMiddleware, emptyCart)
 router.delete("/:id",isAdmin, deleteUser);
 router.put("/:edit-user",authMiddleware, updateUser);
 router.put("/save-address",authMiddleware, setUserAddress);
