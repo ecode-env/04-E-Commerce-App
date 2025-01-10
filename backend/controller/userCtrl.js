@@ -391,39 +391,62 @@ const getWishlist = asyncHandler(async (req, res) => {
   }
 });
 
-// get user cart items
+// user cart items
 const userCart = asyncHandler(async (req, res, next) => {
+  // Destructure cart from the request body and _id from req.user
   const { cart } = req.body;
   const { _id } = req.user;
+
+  // Validate if the provided MongoDB ID is valid
   validateMongoDBid(_id);
 
   try {
-    let products = [];
-    const user = await User.findById(_id);
+    let products = []; // Array to hold processed cart items
+    const user = await User.findById(_id); // Find the user by their ID
 
-    // If user already has a product cart, remove it
+    // Check if the user already has a cart and remove it if it exists
     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
     if (alreadyExistCart) await alreadyExistCart.remove();
 
+    // Iterate over each item in the cart
     for (let i = 0; i < cart.length; i++) {
-      let object = {};
-      object.product = cart[i]._id;
-      object.quantity = cart[i].quantity;
-      object.color = cart[i].color;
+      let object = {}; // Object to hold details of a single cart item
+      object.product = cart[i]._id; // Product ID
+      object.quantity = cart[i].quantity; // Quantity of the product
+      object.color = cart[i].color; // Color of the product
 
+      // Find the product by its ID and select its price
       let getPrice = await Product.findById(cart[i]._id).select("price");
+
+      // If product is found, add its price to the object
       object.price = getPrice.price;
+
+      // Add the object to the products array
       products.push(object);
     }
-     let totalCart = 0;
-     for (let i = 0; i < products.length; i++) {
-       totalCart += products[i].price * products[i].quantity;
-     }
-    
-    } catch (error) {
+
+    let cartTotal = 0; // Initialize total cost of the cart
+
+    // Calculate the total cost of the cart
+    for (let i = 0; i < products.length; i++) {
+      cartTotal += products[i].price * products[i].quantity;
+    }
+
+    // Create a new cart document with the processed products, total cost, and user ID
+    let newCart = await new Cart({
+      products,
+      cartTotal,
+      orderby: user._id,
+    }).save(); // Save the cart to the database
+
+    // Send the newly created cart as the response
+    res.json(newCart);
+  } catch (error) {
+    // If an error occurs, throw it to be handled by the asyncHandler
     throw new Error(error);
   }
 });
+
 
 export {
   createUser,
