@@ -27,9 +27,8 @@ const createUser = asyncHandler(async (req, res) => {
   }
 });
 
-/* -------------Login--------------- */
-
 // login user controller
+
 const loginUserCtrl = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
