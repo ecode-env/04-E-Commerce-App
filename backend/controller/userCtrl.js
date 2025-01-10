@@ -410,7 +410,7 @@ const userCart = asyncHandler(async (req, res, next) => {
 
     // Check if the user already has a cart and remove it if it exists
     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-    if (alreadyExistCart) await alreadyExistCart.remove();
+    if (alreadyExistCart) await alreadyExistCart.deleteOne();
 
     // Iterate over each item in the cart
     for (let i = 0; i < cart.length; i++) {
@@ -574,7 +574,7 @@ const createOrder = asyncHandler(async (req, res) => {
         createdAt: Date.now(), // Current timestamp
         currency: "USD", // Currency of the payment
       },
-      orderby: userCart._id, // Reference to the user who placed the order
+      orderby: user._id, // Reference to the user who placed the order
       orderStatus: "Cash on Delivery", // Initial status of the order
     }).save(); // Save the new order to the database
 
@@ -595,6 +595,25 @@ const createOrder = asyncHandler(async (req, res) => {
 
     // Send a success response to the client
     res.json({ message: "Success" });
+  } catch (error) {
+    // Catch and throw any errors encountered during the process
+    throw new Error(error);
+  }
+});
+
+// Get order
+
+const getOrder = asyncHandler(async (req, res) => {
+  // Extract _id from the authenticated user's information
+  const { _id } = req.user;
+  // Validate the MongoDB ID to ensure it's a valid ObjectId
+  validateMongoDBid(_id);
+
+  try {
+    // Find the order associated with the user's ID
+    const userOrder = await Order.findOne({ orderby: _id }).populate('products.product').exec();
+    // Respond with the order details
+    res.json(userOrder);
   } catch (error) {
     // Catch and throw any errors encountered during the process
     throw new Error(error);
@@ -623,4 +642,5 @@ export {
   emptyCart,
   applyCoupon,
   createOrder,
+  getOrder,
 };
