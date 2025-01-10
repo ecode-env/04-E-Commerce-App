@@ -280,7 +280,9 @@ const unblockUser = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-//-------------update user password ----------------------------
+
+//update user password
+
 const updatePassword = asyncHandler(async (req, res) => {
   // Destructure the user ID from the authenticated user object in the request
   const { _id } = req.user;
