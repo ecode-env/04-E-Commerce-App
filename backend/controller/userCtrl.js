@@ -620,6 +620,11 @@ const getOrder = asyncHandler(async (req, res) => {
   }
 });
 
+// Update order status.
+
+const updateOrderStatus = asyncHandler(async (req, res) => {});
+
+
 export {
   createUser,
   loginUserCtrl,
@@ -643,4 +648,5 @@ export {
   applyCoupon,
   createOrder,
   getOrder,
+  updateOrderStatus,
 };
