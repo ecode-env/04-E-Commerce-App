@@ -460,6 +460,21 @@ const getUserCart = asyncHandler(async (req, res) => {
   }
 });
 
+// Set empty cart information for the user cart.
+
+const emptyCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDBid(_id);
+  try {
+    const user = await User.findOne({ _id });
+    const cart = await Cart.findOneAndRemove({ orderby: user._id });
+    res.json(cart);
+  } catch (error) {
+    throw new Error(error);
+    
+  }
+});
+
 export {
   createUser,
   loginUserCtrl,
@@ -479,4 +494,5 @@ export {
   setUserAddress,
   userCart,
   getUserCart,
+  emptyCart,
 };
