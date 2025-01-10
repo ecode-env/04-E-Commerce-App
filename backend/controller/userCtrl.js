@@ -348,7 +348,7 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
   }
 });
 
-// ---------------- Reset Password --------------------------------
+//Reset Password
 
 // Function to handle password reset functionality
 const resetPassword = asyncHandler(async (req, res) => {
