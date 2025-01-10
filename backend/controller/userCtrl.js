@@ -415,8 +415,12 @@ const userCart = asyncHandler(async (req, res, next) => {
       object.price = getPrice.price;
       products.push(object);
     }
-     
-  } catch (error) {
+     let totalCart = 0;
+     for (let i = 0; i < products.length; i++) {
+       totalCart += products[i].price * products[i].quantity;
+     }
+    
+    } catch (error) {
     throw new Error(error);
   }
 });
