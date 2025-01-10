@@ -3,12 +3,14 @@ import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
 import Coupon from "../models/couponModel.js";
+import Order from "../models/orderModel.js";
 
 import generateToken from "../config/jwtToken.js";
 import validateMongoDBid from "../utils/validateMongodbid.js";
 import generateRefreshToken from "../config/refreshToken.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import uniqid from "uniqid";
 import sendEmail from "../controller/emailCtrl.js";
 
 // Create a new user
@@ -507,7 +509,7 @@ const applyCoupon = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ _id });
 
   // Retrieve the user's cart, populating the products with their details
-  let {  cartTotal } = await Cart.findOne({
+  let { cartTotal } = await Cart.findOne({
     orderby: user._id,
   }).populate("products.product");
 
@@ -526,6 +528,76 @@ const applyCoupon = asyncHandler(async (req, res, next) => {
 
   // Respond with the total after discount
   res.json(totalAfterDiscount);
+});
+
+// Create a new order with the user's cart
+
+const createOrder = asyncHandler(async (req, res) => {
+  // Destructure COD (Cash on Delivery) and couponApplied from the request body
+  const { COD, couponApplied } = req.body;
+
+  // Destructure _id from the authenticated user's information
+  const { _id } = req.user;
+
+  // Validate the MongoDB ID to ensure it's a valid ObjectId
+  validateMongoDBid(_id);
+
+  try {
+    // If COD is not provided, throw an error indicating the order creation failed
+    if (!COD) throw new Error("Create cash order failed");
+
+    // Find the user by their ID
+    const user = await User.findById(_id);
+
+    // Find the user's cart associated with their user ID
+    const userCart = await Cart.findOne({ orderby: user._id });
+
+    let finalAmount = 0;
+
+    // If a coupon is applied and there's a totalAfterDiscount in the cart, use it as the final amount
+    if (couponApplied && userCart.totalAfterDiscount) {
+      finalAmount = userCart.totalAfterDiscount;
+    } else {
+      // Otherwise, use the cartTotal as the final amount
+      finalAmount = userCart.cartTotal;
+    }
+
+    // Create a new order with the products from the user's cart
+    let newOrder = await new Order({
+      products: userCart.products, // List of products in the order
+      paymentIntent: {
+        id: uniqid(), // Unique identifier for the payment
+        method: "COD", // Payment method
+        amount: finalAmount, // Final amount to be paid
+        status: "Cash on Delivery", // Status of the payment
+        createdAt: Date.now(), // Current timestamp
+        currency: "USD", // Currency of the payment
+      },
+      orderby: userCart._id, // Reference to the user who placed the order
+      orderStatus: "Cash on Delivery", // Initial status of the order
+    }).save(); // Save the new order to the database
+
+    // Prepare bulk write operations to update product quantities
+    let update = userCart.products.map((product) => {
+      return {
+        updateOne: {
+          filter: { _id: product._id }, // Filter by product ID
+          update: {
+            $inc: { quantity: -product.quantity, sold: +product.quantity },
+          }, // Decrement quantity and increment sold count
+        },
+      };
+    });
+
+    // Execute bulk write operations to update product inventory
+    const updated = await Product.bulkWrite(update, {});
+
+    // Send a success response to the client
+    res.json({ message: "Success" });
+  } catch (error) {
+    // Catch and throw any errors encountered during the process
+    throw new Error(error);
+  }
 });
 
 export {
@@ -549,4 +621,5 @@ export {
   getUserCart,
   emptyCart,
   applyCoupon,
+  createOrder,
 };
