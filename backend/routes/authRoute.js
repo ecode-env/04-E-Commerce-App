@@ -17,6 +17,7 @@ import {
   getWishlist,
   setUserAddress,
   userCart,
+  getUserCart,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -32,6 +33,9 @@ router.post("/admin-login", loginAdmin);
 router.post('/cart', authMiddleware, userCart);
 router.get("/all-users", getAllUsers);
 router.get("/wishlist", authMiddleware, getWishlist);
+router.get("/cart", authMiddleware, getUserCart);
+
+
 router.get("/refresh",handlerRefreshToken);
 router.get('/logout', logoutUser);
 
