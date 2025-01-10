@@ -447,11 +447,18 @@ const userCart = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 // Get user cart information
 
-
-
+const getUserCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDBid(_id);
+  try {
+    const cart = await Cart.findOne({ orderby: _id }).populate('products.product');
+    res.json(cart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 export {
   createUser,
@@ -471,4 +478,5 @@ export {
   getWishlist,
   setUserAddress,
   userCart,
+  getUserCart,
 };
