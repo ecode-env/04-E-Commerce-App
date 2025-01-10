@@ -19,6 +19,7 @@ import {
   userCart,
   getUserCart,
   emptyCart,
+  applyCoupon,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -32,6 +33,7 @@ router.put("/password", authMiddleware, updatePassword);
 router.post("/login", loginUserCtrl);
 router.post("/admin-login", loginAdmin);
 router.post('/cart', authMiddleware, userCart);
+router.post('/cart/apply-coupon', authMiddleware, applyCoupon)
 router.get("/all-users", getAllUsers);
 router.get("/wishlist", authMiddleware, getWishlist);
 router.get("/cart", authMiddleware, getUserCart);
