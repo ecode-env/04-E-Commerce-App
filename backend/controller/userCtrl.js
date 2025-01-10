@@ -412,13 +412,11 @@ const userCart = asyncHandler(async (req, res, next) => {
       object.color = cart[i].color;
 
       let getPrice = await Product.findById(cart[i]._id).select("price");
-      console.log(getPrice)
       object.price = getPrice.price;
 
       products.push(object);
     }
 
-    console.log(products);
   } catch (error) {
     throw new Error(error);
   }
