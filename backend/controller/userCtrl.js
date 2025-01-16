@@ -611,7 +611,9 @@ const getOrder = asyncHandler(async (req, res) => {
 
   try {
     // Find the order associated with the user's ID
-    const userOrder = await Order.findOne({ orderby: _id }).populate('products.product').exec();
+    const userOrder = await Order.findOne({ orderby: _id })
+      .populate("products.product")
+      .exec();
     // Respond with the order details
     res.json(userOrder);
   } catch (error) {
@@ -620,9 +622,44 @@ const getOrder = asyncHandler(async (req, res) => {
   }
 });
 
-// Update order status.
+// Update the order status
 
-const updateOrderStatus = asyncHandler(async (req, res) => {});
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  // Extract 'status' from the request body
+  const { status } = req.body;
+  // Extract 'id' from the request parameters (URL)
+  const { id } = req.params;
+  // Validate the provided MongoDB ID format
+  validateMongoDBid(id);
+
+  try {
+    // Find the order by ID and update the status and payment status
+    const updateOrderStatus = await Order.findByIdAndUpdate(
+      id,
+      { 
+        // Update the order's status with the new value
+        orderStatus: status,
+        // Update the payment status to match the order status
+        paymentIntent: {
+          status: status
+        },
+      },
+      { new: true } // Return the updated document
+    );
+
+    // If no order is found after update, return a 404 error
+    if (!updateOrderStatus) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Send back the updated order in the response
+    res.json(updateOrderStatus);
+    
+  } catch (error) {
+    // Catch and handle any errors, sending a 500 error with the message
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 export {
