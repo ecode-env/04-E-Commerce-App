@@ -12,8 +12,6 @@ This is a fully functional **e-commerce backend** built using **Node.js**, **Exp
 - **dotenv** for environment config
 - **Postman** or any HTTP client for testing
 
-```
-
 ## 🔐 API Features
 
 - 🔑 **User Authentication**
